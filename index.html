@@ -171,6 +171,8 @@ function showLogin(edit){$("ln").readOnly=true;$("ln").value=$("name").value;$("
   $("lgt").textContent=edit?"Mon profil":"Bienvenue 🎰";$("lgx").style.display=edit?"":"none";$("lgl").style.display="none";$("lgb").style.display="block";$("lg").style.display="flex"}
 function pickAv(a){pav=a;document.querySelectorAll("#lav button").forEach(b=>b.classList.toggle("on",b.textContent==a))}
 function saveLogin(){const n=$("ln").value.trim();if(n.length<2)return toast("Pseudo trop court (2 caractères min)");$("name").value=n;av=pav;dc=$("ld").value.trim();$("lg").style.display="none";prof();save();daily()}
+const CATY_PCT=0.0001201331,CATY_P=CATY_PCT/100;
+const NB=()=>{const f=(r)=>D.filter(c=>c.r==r&&c.ab==null&&!c.x).length;return[0,1,2,3,4,5,6].map(r=>RN[r]+" "+f(r)).join(" · ")};
 const cst=c=>{if(c.st)return c.st;const k=c.ab!=null?1.15:1;return{hp:Math.round(([70,90,115,150,200,260,340][c.r]+c.id*7%25)*k),atk:Math.round(([10,13,17,22,29,37,48][c.r]+c.id*3%5)*k),sp:c.ab!=null?c.ab:c.id%4}},AB=["Soin","Garde","Frappe Double","Poison","Vampirisme","Rage","Tempête","Renaissance","Égide","Brûlure"];
 let DU=[],duelSeen={},BT=[],BS=null,RP="r";
 function dch(){return{sk:"#f5d0b0",hc:"#2b1b17",ec:"#3b82f6",bc:"#e84a5f",bp:0,eq:{}}}
@@ -383,7 +385,7 @@ bo:{n:"📦 Boosters",init(){
   const qH=()=>QS.map((q,i)=>{const dn=qd.includes(i),ok=q[1]()&&!dn;return `<div class="sk"><span>${q[0]}</span><span>${q[2]} 🪙</span><button class="b${ok?" p":""}" ${ok?"":"disabled"} onclick="claimQ(${i})">${dn?"✅ Récupérée":ok?"Récupérer":"En cours"}</button></div>`}).join("");
   const rf=()=>{$("colw").innerHTML=colH();$("qs").innerHTML=qH()};
   window.claimQ=i=>{if(qd.includes(i)||!QS[i][1]())return;qd.push(i);bal+=QS[i][2];save();toast("🎯 Quête validée : +"+QS[i][2]+" 🪙");rf()};
-  return `<b>Boosters de cartes</b><br><small>Persos inspirés des archétypes d'anime (shonen, isekai, mecha, magical girl…). Plus le booster est cher, plus les cartes rares sortent.</small>
+  return `<b>Boosters de cartes</b><br><small>Persos inspirés des archétypes d'anime (shonen, isekai, mecha, magical girl…). Plus le booster est cher, plus les cartes rares sortent.</small><br><small>Cartes par catégorie : ${NB()}</small>
   <div class="row">${PK.map((p,i)=>`<button class="b p" id="pb${i}" onclick="openPack(${i})">${p.n}<br>${p.p?p.p+" 🪙":"🎁"} · ${p.k} cartes</button>`).join("")}</div>
   <div class="msg" id="m"></div><div class="cards" id="pk"></div>
   <div class="row"><button class="b" onclick="flipAll()">Tout révéler</button><button class="b" onclick="sellD()">Vendre les doublons</button></div>
@@ -614,7 +616,7 @@ games.rp={n:"✊ Duel PFC",init(){setTimeout(rrp,0);
 games.wi={n:"🌠 Vœux",init(){
   const ST=r=>"★".repeat(r>=3?5:r==2?4:3),CL=r=>r>=3?"#ffcf40":r==2?"#c084fc":"#7aa7ff";
   const pk=(h,r)=>{const L=D.filter(c=>(c.ab!=null)==h&&c.r==r);return L[rnd(L.length)]};
-  const one=()=>{const p5=PY.n>=59?1:.02+(PY.n>=40?(PY.n-39)*.05:0),p4=PY.s>=9?1:.12,x=Math.random();PY.n++;PY.s++;let c;
+  const one=()=>{if(Math.random()<CATY_P){const c=D.find(x=>x.x),nw=!cards[c.id];cards[c.id]=(cards[c.id]||0)+1;toast("👑 CATY PREMIUM !!!");return{c,nw}}const p5=PY.n>=59?1:.02+(PY.n>=40?(PY.n-39)*.05:0),p4=PY.s>=9?1:.12,x=Math.random();PY.n++;PY.s++;let c;
     if(x<p5){PY.n=0;PY.s=0;c=Math.random()<.5?FT():pk(true,Math.random()<.85?3:4)}else if(x<p5+p4){PY.s=0;c=pk(true,2)}else c=pk(false,Math.random()<.25?1:0);
     const nw=!cards[c.id];cards[c.id]=(cards[c.id]||0)+1;return{c,nw}};
   const pt=()=>"✨ 5★ garanti dans "+(60-PY.n)+" vœux · 4★ garanti dans "+(10-PY.s)+" vœux";
@@ -625,7 +627,9 @@ games.wi={n:"🌠 Vœux",init(){
   const H=D.filter(c=>c.ab!=null).sort((a,b)=>b.r-a.r);
   return `<div class="bn"><h2>🌠 MONDE DES VŒUX</h2><small>Exauce un vœu pour invoquer des héros avec des capacités spéciales (Vampirisme, Rage, Tempête, Renaissance, Égide, Brûlure…), utilisables dans le Combat.</small>
   <div class="msg" id="wp">${pt()}</div><div class="row" style="justify-content:center"><button class="b p" onclick="wish(1)">Vœu ×1<br>160 🪙</button><button class="b p" onclick="wish(10)">Vœu ×10<br>1500 🪙</button></div>
-  <small>🌟 Bannière de la semaine : ${FT().e} ${FT().n} (1 chance sur 2 parmi les 5★)</small><br><small>★★★★★ 2% (garanti au 60ᵉ) · ★★★★ 12% (garanti tous les 10) · le reste : ★★★</small></div>
+  <small>🌟 Bannière de la semaine : ${FT().e} ${FT().n} (1 chance sur 2 parmi les 5★)</small><br><small>★★★★★ 2% (garanti au 60ᵉ) · ★★★★ 12% (garanti tous les 10) · le reste : ★★★</small>
+  <div class="sk" style="margin-top:8px"><span>★★★ <b>${D.filter(c=>c.ab==null&&c.r<=1).length}</b> cartes</span><span>★★★★ <b>${D.filter(c=>c.ab!=null&&c.r==2).length}</b> héros</span><span>★★★★★ <b>${D.filter(c=>c.ab!=null&&c.r>=3&&!c.x).length}</b> héros</span></div>
+  <div class="sk" style="border-color:#ffd700;box-shadow:0 0 14px #ffd70066;margin-top:6px"><span>👑 <b>CATY PREMIUM</b> 🐱</span><span style="color:#ffd700">taux : ${CATY_PCT.toFixed(10).replace(".",",")} % par vœu</span></div></div>
   <div class="cards" id="wr"></div>
   <details style="margin-top:12px"><summary><b>Héros du monde des vœux (${H.filter(c=>cards[c.id]).length}/${H.length})</b></summary>${H.map(c=>`<div class="sk" style="border-color:${CL(c.r)}"><b>${cards[c.id]?"✅":"❔"} ${c.e} ${c.n}</b><span style="color:${CL(c.r)}">${ST(c.r)}</span><small>✨ ${AB[c.ab]}</small></div>`).join("")}</details>`}};
 let cur="bj";
