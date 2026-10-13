@@ -1,0 +1,16 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin</title><style>
+body{margin:0;background:#030d06;color:#46ff85;font:16px/1.5 "Courier New",monospace;padding:16px}.w{max-width:560px;margin:0 auto}
+input,select,button{font:inherit;background:#07170c;color:#46ff85;border:1px solid #1f7a41;padding:8px;margin:4px 0;width:100%;box-sizing:border-box}button{cursor:pointer;border-color:#46ff85}button:hover{background:#46ff85;color:#030d06}
+.r{display:flex;gap:8px}.r>*{flex:1}h1{font-size:22px}#m{min-height:24px;color:#a6ffc4}.u{display:inline-block;width:auto;margin:3px;padding:4px 8px}small{color:#22b45e}</style></head><body><div class="w">
+<h1>🛠️ Admin Mini-Casino</h1><small>Page privée : rien ne marche sans ton code secret.</small>
+<input id="k" type="password" placeholder="Code secret admin"><button onclick="ld()">🔄 Charger les comptes</button><div id="L"></div>
+<input id="u" placeholder="identifiant du joueur"><div class="r"><input id="a" type="number" placeholder="± jetons"><button onclick="go({amt:+$('a').value})">Envoyer des jetons</button></div>
+<select id="c"><option value="354">🐱 Caty (ultra forte)</option><option value="">Autre carte (id) →</option></select><input id="ci" type="number" placeholder="id de carte (si « Autre »)"><button onclick="go({card:cid()})">🎴 Donner la carte</button><div id="m"></div></div>
+<script>
+const URL_="https://dpjctynrltfplfwxjzwf.supabase.co",KEY="sb_publishable_At9Z3gRWHzaKyHBAqXDNYw_BHI5Cu0a",$=i=>document.getElementById(i),H={apikey:KEY,"Content-Type":"application/json"};
+$("k").value=localStorage.getItem("adk")||"";const say=t=>$("m").textContent=t,cid=()=>$("c").value===""?+$("ci").value:+$("c").value;
+async function ld(){try{const r=await fetch(URL_+"/rest/v1/docs?collection=eq.pl&select=id,data&limit=200",{headers:H}),d=await r.json();d.sort((a,b)=>(b.data.bal||0)-(a.data.bal||0));$("L").innerHTML=d.map(x=>`<button class="u" onclick="$('u').value='${x.id}'">${x.id} · ${x.data.bal||0} 🪙</button>`).join("")||"<small>Aucun compte</small>"}catch(e){say("Erreur de chargement")}}
+async function go(o){const u=$("u").value.trim().toLowerCase(),k=$("k").value;if(!u||!k)return say("Identifiant et code secret requis");if(o.amt===0||Number.isNaN(o.amt)||Number.isNaN(o.card))return say("Valeur invalide");localStorage.setItem("adk",k);
+ try{const r=await fetch(URL_+"/rest/v1/docs?on_conflict=collection,id",{method:"POST",headers:{...H,Prefer:"return=minimal"},body:JSON.stringify({collection:"gifts",id:Math.random().toString(36).slice(2)+Date.now().toString(36),data:{to:u,amt:o.amt||0,card:o.card,t:Date.now(),k}})});
+  say(r.ok?"✅ Envoyé à "+u+" (il le reçoit dans les 15 s environ)":"❌ Refusé : mauvais code secret ?")}catch(e){say("Erreur réseau")}}
+</script></body></html>
