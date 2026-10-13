@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mini-Casino ☢️</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#030d06;--card:#07170c;--tx:#46ff85;--mu:#22b45e;--ac:#a6ffc4;--ln:#1f7a41;--gl:#46ff8566;--rd:#d94343;--bk:#1a1a1a;--gr:#1f9d55}
+:root[data-th=a]{--bg:#0d0800;--card:#1a1100;--tx:#ffb43d;--mu:#bd7f1d;--ac:#ffdc92;--ln:#8a5a12;--gl:#ffb43d66}
+:root[data-th=v]{--bg:#0b0714;--card:#170f2b;--tx:#d6b8ff;--mu:#9170c8;--ac:#b36bff;--ln:#4c2f86;--gl:#b36bff66}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 "Share Tech Mono","Courier New",monospace;text-shadow:0 0 5px var(--gl)}
+body:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;background:repeating-linear-gradient(#0000 0 2px,#0003 3px),radial-gradient(ellipse at center,#0000 55%,#0009 100%)}
+a{color:var(--mu)}small,.mu{color:var(--mu)}
+.w{max-width:920px;margin:0 auto;padding:14px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;border:2px solid var(--ln);background:var(--card);padding:8px 12px;margin-bottom:10px}
+h1{margin:0;font:400 26px "VT323","Share Tech Mono",monospace;letter-spacing:3px;text-transform:uppercase}
+.pf{display:flex;align-items:center;gap:10px;background:none;border:0;color:var(--tx);font:inherit;text-align:left;padding:0;cursor:pointer}
+.av{width:46px;height:46px;border:2px solid var(--ln);background:#0006;display:grid;place-items:center;overflow:hidden}
+.bal{border:2px solid var(--ac);color:var(--ac);padding:3px 12px;font-weight:700;letter-spacing:1px}
+#nav{display:flex;overflow-x:auto;scrollbar-width:none;border-bottom:2px solid var(--ln);margin-bottom:8px}
+#nav button{background:none;border:0;border-bottom:4px solid transparent;color:var(--mu);font:400 21px "VT323","Share Tech Mono",monospace;letter-spacing:2px;text-transform:uppercase;padding:6px 16px;cursor:pointer;white-space:nowrap}
+#nav button.on{color:var(--tx);border-bottom-color:var(--tx);text-shadow:0 0 10px var(--tx)}
+#sub{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+#sub button{background:none;border:1px solid var(--ln);color:var(--mu);font:inherit;font-size:14px;padding:4px 10px;cursor:pointer}
+#sub button.on{background:var(--tx);border-color:var(--tx);color:var(--bg);text-shadow:none}
+.card{border:2px solid var(--ln);background:var(--card);padding:16px;margin-bottom:12px}
+#g{animation:inn .25s}@keyframes inn{from{opacity:0;transform:translateY(5px)}}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0}
+.b{background:none;color:var(--tx);border:1px solid var(--tx);padding:8px 14px;font:inherit;font-size:15px;cursor:pointer;text-transform:uppercase;letter-spacing:1px}
+.b:hover:not(:disabled){background:var(--tx);color:var(--bg);text-shadow:none}
+.b.p{background:var(--tx);color:var(--bg);text-shadow:none;font-weight:700}.b.p:hover:not(:disabled){background:var(--ac)}
+.b:disabled{opacity:.35;cursor:default}
+.b[style*=background]{color:#fff;border-color:#fff5;text-shadow:none}
+input,select{background:#0006;color:var(--tx);border:1px solid var(--ln);padding:7px 8px;font:inherit;width:110px;border-radius:0}
+select{width:auto;max-width:100%}input:focus,select:focus{outline:1px solid var(--tx)}
+.cards{display:flex;gap:6px;flex-wrap:wrap;min-height:64px}
+.c{background:#f4f1e8;color:#111;border-radius:4px;width:44px;height:62px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;text-shadow:none}
+.c.r{color:#c0392b}.c.h{background:repeating-linear-gradient(45deg,var(--ln),var(--ln) 4px,var(--card) 4px,var(--card) 8px);color:transparent}
+.msg{min-height:24px;font-weight:700;margin:6px 0}
+.big{font-size:44px;text-align:center;letter-spacing:8px;margin:10px 0}
+.num{font-size:56px;font-weight:800;text-align:center;border-radius:50%;width:100px;height:100px;line-height:100px;margin:8px auto;background:var(--gr);color:#fff;text-shadow:none}
+ol{padding-left:26px;margin:6px 0}li{padding:3px 0;border-bottom:1px dashed var(--ln)}
+.wheel{position:relative;width:270px;margin:14px auto 6px}
+.wheel canvas{width:270px;height:270px;border-radius:50%;box-shadow:0 0 0 5px var(--tx),0 0 24px var(--gl);transition:transform 4.2s cubic-bezier(.1,.7,.1,1)}
+.wheel i{position:absolute;left:50%;top:-18px;transform:translateX(-50%);font-style:normal;font-size:28px;color:var(--ac);z-index:2}
+.reels{display:flex;gap:10px;justify-content:center;margin:12px 0}
+.reel{width:84px;height:96px;background:#f4f1e8;border:3px solid var(--ln);font-size:52px;display:flex;align-items:center;justify-content:center;overflow:hidden;text-shadow:none}
+.reel.sp{animation:shk .12s infinite;filter:blur(1.5px)}@keyframes shk{50%{transform:translateY(6px)}}
+.reel.win{animation:pop .5s 3;box-shadow:0 0 20px var(--tx)}@keyframes pop{50%{transform:scale(1.12)}}
+.dice{display:inline-block;font-size:64px;letter-spacing:6px}.dice.sp{animation:shk .12s infinite}
+.sk{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;border:1px solid var(--ln);padding:8px;margin:6px 0;background:#0003}
+.sk.on{border-color:var(--tx);box-shadow:0 0 8px var(--gl)}
+.sw{display:flex;gap:4px}.sw span{width:22px;height:22px;border-radius:50%;border:1px solid #fff4}
+.sc{display:grid;grid-template-columns:repeat(3,76px);gap:8px;justify-content:center;margin:12px 0}
+.sc button{height:76px;font-size:38px;border:2px solid var(--ln);background:linear-gradient(135deg,#777,#bbb);cursor:pointer}.sc button.o{background:#f4f1e8}
+.mg{display:grid;grid-template-columns:repeat(5,58px);gap:6px;justify-content:center;margin:12px 0}
+.mg button{height:58px;font-size:28px;border:2px solid var(--ln);background:#2a2a2a;cursor:pointer}.mg button.o{background:#f4f1e8}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--bg);color:var(--tx);border:2px solid var(--tx);padding:10px 16px;font-weight:700;z-index:70;box-shadow:0 0 14px var(--gl)}
+.cd{width:92px;height:128px;border:2px solid var(--ln);background:linear-gradient(135deg,var(--ln),var(--card));color:var(--tx);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;font-size:12px;padding:4px}
+.cd b{font-size:40px}
+.cd.f{background:linear-gradient(160deg,var(--card),#000a);border-color:var(--rc);box-shadow:0 0 14px var(--rc);animation:fl .45s;color:#fff}
+.cd.f span{font-size:38px}.cd.f em{font-style:normal;font-weight:700;line-height:1.1;margin:4px 0}.cd small{color:var(--rc)}
+.cd.mini{width:76px;height:106px;font-size:10px;animation:none}.cd.mini span{font-size:28px}
+.cd.off{background:#0004;border-color:var(--ln);cursor:default;opacity:.4}.cd.sel{outline:3px solid var(--tx)}
+.cd.f.h{animation:fl .45s,hol 3s linear infinite}.cd.mini.h{animation:none}
+@keyframes fl{from{transform:rotateY(90deg) scale(.9)}}@keyframes hol{to{filter:hue-rotate(360deg)}}
+.bn{border:2px solid var(--tx);background:radial-gradient(circle at 25% 15%,var(--gl),transparent 60%),var(--bg);padding:18px;text-align:center;margin:10px 0}
+.bn h2{margin:0 0 4px;letter-spacing:3px}
+.fx{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;background:radial-gradient(#ffd70055,#000d);animation:fxin .3s;overflow:hidden}.rays{position:absolute;width:150vmax;height:150vmax;background:repeating-conic-gradient(#ffd70040 0 8deg,#0000 8deg 20deg);animation:spn 6s linear infinite}.fcx{position:relative;text-align:center;font-size:26px;color:#fff;text-shadow:0 0 12px #ffd700;animation:pp .9s}.sp{position:absolute;bottom:-30px;font-style:normal;font-size:26px;animation:up 2s ease-out infinite}@keyframes spn{to{transform:rotate(360deg)}}@keyframes pp{from{transform:scale(0) rotate(-25deg)}}@keyframes fxin{from{opacity:0}}@keyframes up{to{transform:translateY(-110vh)}}
+.dot{width:28px;height:28px;border-radius:50%;border:2px solid #fff4;cursor:pointer;padding:0}.dot.on{border-color:var(--tx);box-shadow:0 0 0 2px var(--tx)}
+.pe{display:grid;grid-template-columns:200px 1fr;gap:16px;margin-bottom:14px}
+#lg{position:fixed;inset:0;z-index:20;background:#000c;display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto}
+.lgc{background:var(--card);border:2px solid var(--tx);padding:22px;max-width:420px;width:100%}
+.lgc label{display:block;margin-top:10px;font-weight:700}.f input{width:100%;margin:4px 0}
+.avs{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.avs button{font-size:24px;width:44px;height:44px;border:2px solid transparent;background:#0003;cursor:pointer}.avs button.on{border-color:var(--tx)}
+#tm{position:fixed;inset:0;z-index:40;background:#020a04;color:#3dff7a;font:18px/1.5 "Courier New",monospace;display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto;text-shadow:0 0 6px #3dff7a99}
+.crt{width:100%;max-width:640px;border:2px solid #3dff7a55;padding:22px;box-shadow:0 0 40px #3dff7a33 inset}
+#tb{margin:0 0 12px;font:inherit;white-space:pre-wrap}
+#tm input{background:transparent;border:0;border-bottom:2px solid #3dff7a;color:inherit;font:inherit;width:60%;outline:0;caret-color:#3dff7a;text-shadow:inherit;border-radius:0;padding:2px}
+.tl{margin:10px 0}#tmsg{min-height:28px;margin:8px 0;color:#9dffb8}
+.tbtn{display:flex;gap:14px;flex-wrap:wrap}.tbtn button{background:none;border:0;color:inherit;font:inherit;cursor:pointer;text-shadow:inherit;padding:6px 2px}.tbtn button:hover{background:#3dff7a;color:#020a04}
+@media(max-width:560px){.pe{grid-template-columns:1fr}h1{font-size:20px}}
+</style></head><body><div class="w">
+<header><button class="pf" onclick="showLogin(1)"><span class="av" id="hav">🦊</span><span><b id="hn">Joueur</b><br><small id="st"></small></span></button><h1 id="ti">☢️ Mini-Casino</h1><div class="row" style="margin:0"><div class="bal" id="bal">0 🪙</div><button class="b p" id="adb" style="display:none" onclick="show('ad')">🛠️ ADMIN</button><button class="b" onclick="cyc()" title="Couleur">◐</button><button class="b" onclick="logout()" title="Déconnexion">⏏</button></div></header><input id="name" type="hidden">
+<div id="nav"></div><div id="sub"></div>
+<div id="g" class="card"></div>
+<div class="mu" style="text-align:center;font-size:13px">Jetons virtuels uniquement · <a href="#" onclick="show('ad');return false">admin</a></div>
+</div>
+<div id="tm"><div class="crt"><pre id="tb"></pre><div id="tf" style="display:none">
+<div class="tl">&gt; IDENTIFIANT : <input id="tu" maxlength="14" autocomplete="username" spellcheck="false" autocapitalize="off"></div>
+<div class="tl">&gt; MOT DE PASSE : <input id="tp" type="password" maxlength="40" autocomplete="current-password" onkeydown="if(event.key=='Enter')tmLog()"></div>
+<div id="tmsg"></div><div class="tbtn"><button onclick="tmLog()">[ CONNEXION ]</button><button onclick="tmReg()">[ NOUVEAU COMPTE ]</button><button id="tgst" style="display:none" onclick="tmGuest()">[ MODE INVITÉ ]</button></div></div></div></div>
+<div id="lg" style="display:none"><div class="lgc f"><p id="lgl" style="display:none">…</p><div id="lgb" style="display:none"><h2 id="lgt" style="margin:0 0 4px">Bienvenue 🎰</h2><small>Crée ton compte pour jouer avec tes amis.</small>
+<label>Identifiant</label><input id="ln" maxlength="14" placeholder="Ton pseudo"><label>Avatar</label><div class="avs" id="lav"></div><label>Tag Discord <small>(optionnel)</small></label><input id="ld" maxlength="32" placeholder="pseudo">
+<div class="row"><button class="b p" style="flex:1" onclick="saveLogin()">Jouer</button><button class="b" id="lgx" style="display:none" onclick="$('lg').style.display='none'">Annuler</button></div>
+<small>Tu es connecté via ton compte Claude invité. Le tag Discord est juste affiché à tes amis (connexion Discord directe impossible ici).</small></div></div></div>
+<script>
+let bal=1000,me=null,dbRef=null,timer,own=["classic"],skin="classic",day="",busy=false,cards={},qd=[],DB=null,OPEN=[],doneSeen={},av="🦊",dc="",fb=0,ch=dch(),it={},gd=[],ISOWN=false,PY={n:0,s:0},LD=false,th="g",LBD=null;
+const SK={
+classic:{n:"Standard",p:0,i:"☢️",c:["#0b0714","#1a1030","#b36bff","#f3ecff"],s:["🍒","🍋","🔔","⭐","💎","7️⃣"]},
+sakura:{n:"Sakura (anime)",p:2000,i:"🌸",c:["#2a1220","#3b1a2f","#ff8fc7","#ffeaf4"],s:["🌸","🍡","🎀","⭐","💮","7️⃣"]},
+ninja:{n:"Ninja",p:3000,i:"🥷",c:["#0b0b10","#1a1a24","#ff3b4a","#eeeeee"],s:["🥷","🗡️","🍙","⛩️","🐉","7️⃣"]},
+ocean:{n:"Océan",p:2500,i:"🐠",c:["#06202b","#0d3345","#4fd1c5","#e6fbff"],s:["🐠","🐙","🐚","⭐","🐳","7️⃣"]},
+neon:{n:"Cyber Néon",p:4000,i:"👾",c:["#07061a","#12113a","#00f0ff","#f0f0ff"],s:["👾","🎮","💿","⚡","🤖","7️⃣"]},
+royal:{n:"Or Royal",p:8000,i:"👑",c:["#1a1206","#2b2010","#ffd700","#fff6dc"],s:["👑","🏰","💰","⭐","💎","7️⃣"]}};
+const $=id=>document.getElementById(id);
+const rnd=n=>Math.floor(Math.random()*n);
+try{const s=JSON.parse(localStorage.getItem("casino")||"{}");if(s.bal!=null)bal=s.bal;if(s.name)$("name").value=s.name;if(s.own)own=s.own;if(s.cards)cards=s.cards;if(s.qd)qd=s.qd;if(s.av)av=s.av;dc=s.dc||"";fb=s.fb||0;if(s.skin)skin=s.skin;day=s.day||""}catch(e){}
+function save(){
+  $("bal").textContent=bal.toLocaleString("fr")+" 🪙";
+  try{localStorage.setItem("casino",JSON.stringify({bal,name:$("name").value,own,skin,day,cards,qd,av,dc,fb}))}catch(e){}
+  clearTimeout(timer);timer=setTimeout(()=>{if(dbRef&&LD&&$("name").value)dbRef.set({name:$("name").value||"Anonyme",bal,own,skin,day,cards,qd,av,dc,fb,ch,it,gd,py:PY,th,nc:Object.keys(cards).length,t:Date.now()}).catch(()=>{})},600);
+}
+function bet(){if(busy)return 0;const v=parseInt($("bet").value)||0;return v>0&&v<=bal?v:0}
+function betUI(){return `<div class="row">Mise : <input id="bet" type="number" min="1" value="50"><button class="b" onclick="$('bet').value=Math.max(1,Math.floor(bal/2))">½</button><button class="b" onclick="$('bet').value=bal">Tapis</button></div>`}
+function pay(m,x){busy=false;bal+=x;save();const e=$("m");if(!e)return;e.textContent=m;if(bal<1)e.innerHTML+=` <button class="b p" onclick="bal=300;save();show(cur)">Recevoir 300 🪙</button>`}
+const RN=["Commune","Rare","Épique","Légendaire","Mythique","Secrète","Divine"],RC=["#9aa7a0","#4aa3ff","#b46bff","#ffb020","#ff4fd8","#00e5ff","#ffffff"],SELL=[30,100,300,1000,4000,10000,30000];
+const D=["🥷 Ninja Débutant,🏴‍☠️ Mousse Pirate,🧙 Apprenti Mage,🐱 Chat Espion,🍙 Cuistot de Ramen,🏫 Déléguée de Classe,🤖 Mini Mecha,🎒 Élève Transféré,🐣 Bébé Dragon,⚽ Capitaine du Club,🏐 Passeur Turbo,🎤 Idol Débutante,🌸 Fille aux Cerisiers,👻 Petit Fantôme,🍡 Gardien de Dango,🐺 Louveteau Spirituel",
+  "⚔️ Chasseur de Démons,🔮 Magical Girl Lunaire,🦊 Renarde Mystique,🏹 Archère de l'Ombre,🧛 Vampire Lycéen,🧪 Alchimiste Prodige,🚀 Pilote de Mecha,🃏 Joueur Maudit,🎻 Violoniste Tragique,🍜 Maître Gourmet,🕵️ Détective à Lunettes",
+  "🔥 Héros Flamboyant,⚡ Dieu de la Foudre,🌙 Reine des Vampires,🛡️ Chevalier Surpuissant,🦸 Héros en Un Coup,🐲 Dompteur de Dragons,👁️ Faucheur Mystérieux",
+  "👑 Roi des Pirates,🌟 Guerrier Doré,🗡️ Épéiste aux Trois Lames,🌌 Mage Mille Sorts","🌈 Dieu du Gacha,🐉 Dragon Éternel"].map((t,r)=>[r,t]).concat([[0,"🍱 Livreur de Bento,🎧 Otaku Chill,📚 Rat de Bibliothèque,🌧️ Gamin sous la Pluie"],[1,"🐍 Assassin Silencieux,🎭 Acteur Masqué,👼 Ange Déchu"],[2,"🧊 Maîtresse des Glaces,🌪️ Samouraï du Vent"],[3,"🕰️ Voyageur Temporel,🧿 Oracle Cosmique"],[4,"🔱 Empereur des Mers"],[5,"🕳️ Le Protagoniste Caché,💫 Héroïne de l'Autre Monde,🎬 Réalisateur Légendaire"],[6,"🌠 Déesse de l'Anime,⛩️ Esprit du Studio"],[0,"🏐 Yahaba Shigeru,🦌 Chopper"],[1,"🏐 Hinata Shoyo,🏐 Kageyama Tobio,🏐 Tsukishima Kei,🍊 Nami,⚡ Zenitsu,🐗 Inosuke,🌸 Sakura Haruno,🥜 Anya Forger,🎣 Gon Freecss"],[2,"🐕 Kyoutani « Mad Dog »,🦉 Bokuto Koutaro,🐈 Kuroo Tetsuro,👑 Oikawa Tooru,🌀 Sasuke Uchiha,📖 Kakashi,⚔️ Zoro,🌊 Tanjiro Kamado,🎋 Nezuko,🐯 Yuji Itadori,💚 Izuku Midoriya,💥 Bakugo,🧣 Mikasa,💪 Eren Yeager,📓 Light Yagami,🍬 L,⚙️ Edward Elric,⚡ Killua Zoldyck,🍊 Ichigo,👑 Vegeta"],[3,"🍥 Naruto Uzumaki,🔥 Son Goku,🏴‍☠️ Monkey D. Luffy,⚔️ Levi Ackerman,👊 Saitama"],[4,"👁️ Satoru Gojo,👹 Sukuna"],[6,"🌌 Goku Ultra Instinct"],[0,"🏐 Kinoshita Hisashi,🏐 Narita Kazuhito,🏐 Ennoshita Chikara,📋 Yachi Hitoka,📚 Takeda Ittetsu,🧢 Ukai Keishin,🐈 Shibayama Yuki,🐈 Inuoka Sou,🌊 Watari Shinji,🦉 Komi Haruki,🦉 Sarukui Yamato,🛡️ Sakunami Kosuke,🦊 Ginjima Hitoshi,🦊 Omimi Ren"],[1,"🐦 Sawamura Daichi,🐦 Sugawara Koshi,🐦 Azumane Asahi,🐦 Nishinoya Yu,🐦 Tanaka Ryunosuke,🐦 Yamaguchi Tadashi,🐦 Shimizu Kiyoko,🐈 Kenma Kozume,🐈 Yaku Morisuke,🐈 Kai Nobuyuki,🐈 Lev Haiba,🐈 Yamamoto Taketora,🐈 Fukunaga Shohei,🐈 Nekomata Yasufumi,🌊 Hanamaki Takahiro,🌊 Matsukawa Issei,🌊 Kunimi Akira,🌊 Kindaichi Yuutarou,🦉 Konoha Akinori,🦉 Washio Tatsuki,🦅 Goshiki Tsutomu,🦅 Shirabu Kenjiro,🦅 Kawanishi Taichi,🦅 Semi Eita,🛡️ Futakuchi Kenji,🛡️ Aone Takanobu,🦊 Suna Rintaro,🦊 Aran Ojiro"],[2,"🌊 Iwaizumi Hajime,🦉 Akaashi Keiji,🦅 Tendo Satori,🦊 Miya Osamu,🦊 Kita Shinsuke,😎 Terushima Yuji,🏐 Komori Motoya,⭐ Hoshiumi Kourai"],[3,"🦅 Ushijima Wakatoshi,🦊 Miya Atsumu,🧼 Sakusa Kiyoomi"],[2,"🔥 Rengoku Kyojuro|5,🦋 Shinobu Kocho|9,🐸 Jiraiya|8,❄️ Todoroki Shoto|9,🐕 Megumi Fushiguro|8,🎖️ Erwin Smith|5,💪 Rock Lee|6,🃏 Hisoka Morow|4,🌸 Nico Robin|7"],[3,"🌑 Itachi Uchiha|6,🗡️ Dracule Mihawk|5,🐗 Meliodas|4,💀 Ainz Ooal Gown|7,🪙 Trafalgar Law|8,🔥 Akaza|9"],[4,"👁️ Madara Uchiha|6,🟦 Rimuru Tempest|7,☀️ Escanor|5"],[0,"🍙 Choji Akimichi,🦴 Kiba Inuzuka,🐛 Shino Aburame,🐶 Akamaru,🧒 Konohamaru,🎯 Usopp,🎸 Brook,🔧 Franky,🥋 Krillin,🌵 Yamcha,👁️ Tenshinhan,🐷 Oolong,🐱 Puar,🌱 Raditz,🪖 Nappa,🧢 Connie Springer,🥔 Sasha Blouse,🐴 Jean Kirstein,👸 Historia Reiss,🛡️ Reiner Braun,🐸 Tsuyu Asui,⚡ Denki Kaminari,🌺 Mina Ashido,🐼 Panda,🐍 Toge Inumaki,🔩 Winry Rockbell,👓 Leorio Paradinight,🐺 Genya Shinazugawa,🧸 Kon,💪 Yasutora Sado,🌼 Orihime Inoue,🍵 Kisuke Urahara,🍳 Loid Cuistot,🎒 Nagisa Shiota,🏀 Hanamichi Sakuragi,🎾 Ryoma Echizen"],[1,"🍊 Sanji,🗡️ Rukia Kuchiki,🔴 Renji Abarai,🏹 Uryu Ishida,📚 Armin Arlert,🫧 Ochaco Uraraka,🏃 Tenya Iida,🪨 Eijiro Kirishima,🔨 Nobara Kugisaki,🗡️ Maki Zenin,🌊 Giyu Tomioka,☁️ Muichiro Tokito,💗 Mitsuri Kanroji,⛓️ Kurapika,🤖 Alphonse Elric,🔥 Roy Mustang,🎯 Riza Hawkeye,🔥 Natsu Dragneel,⭐ Lucy Heartfilia,😺 Happy,❄️ Gray Fullbuster,🍀 Asta,🌪️ Yuno,💧 Noelle Silva,⚔️ Kirito,🍳 Asuna,🔄 Subaru Natsuki,🩷 Rem,❄️ Emilia,💥 Megumin,🎲 Kazuma Satou,💧 Aqua,🛡️ Darkness,🕶️ Loid Forger,🌹 Yor Forger,🐺 Bond,🧪 Senku Ishigami,🔬 Chrome,💪 Taiju Oki,🥅 Isagi Yoichi,⚽ Bachira Meguru,🏍️ Takemichi Hanagaki,🏍️ Draken,🔥 Shinra Kusakabe,🕊️ Arthur Boyle,🎹 Kaori Miyazono,🎻 Kousei Arima"],[2,"🏜️ Gaara,🐍 Orochimaru,🐸 Tsunade,🥋 Might Guy,⚡ Minato Namikaze,🍥 Boruto Uzumaki,🔥 Sabo,🌹 Boa Hancock,🌊 Jinbe,🔥 Eustass Kid,🌸 Byakuya Kuchiki,🐺 Grimmjow,🦇 Ulquiorra,👹 Frieza Soldat,🔬 Hange Zoe,🌊 Annie Leonhart,💀 Shigaraki,🧪 Overhaul,🎴 Tengen Uzui,💨 Sanemi Shinazugawa,🐍 Obanai Iguro,🧓 Scar,🛡️ Olivier Armstrong,📓 Misa Amane,🎸 Bocchi,⚽ Rin Itoshi,🦁 Nagi Seishiro,🏍️ Mikey,👓 Ayanokoji,🔥 Reigen Arataka,🧿 Mob,👑 Ranking Ousama,🛡️ Reinhard,🍷 Beatrice,🌑 Yato,🎻 Violet Evergarden,🍃 Totoro,🧹 Kiki,🌸 Chihiro,🐉 Haku"],[3,"🌑 Obito Uchiha,🗡️ Kenpachi Zaraki,👹 Frieza,🧬 Cell,🍬 Majin Buu,🦊 Kurama,🐙 Doflamingo,🔥 Sabo Révolutionnaire,🏴 Crocodile,📕 Zeke Yeager,⚔️ Mikasa Titan,🎴 Muzan Kibutsuji,🌌 Yuta Okkotsu,👁️ Toji Légendaire,⚡ Raiden Shogun"],[4,"🌙 Kaguya Otsutsuki,😸 Whis,👑 Zeno Sama,🏯 Sosuke Aizen Final"],[5,"🌌 Zeno Omni-Roi,🏴‍☠️ Joy Boy,🪐 Rimuru Dieu,🗡️ Guts Berserk"],[6,"🌠 Dieu de la Création,🧬 Le Narrateur Éternel"],[2,"⭐ Erza Scarlet|9,🌀 Neji Hyuga|1,🧠 Shikamaru Nara|3,🔥 Portgas D. Ace|9,❄️ Toshiro Hitsugaya|8,⚡ Trunks|2,🌿 Piccolo|0,🦅 Hawks|2,🔥 Endeavor|9,🧛 Power|4,🧙 Frieren|6,⚔️ Stark|8,🐲 Gohan|5,📓 Nanami Kento|2,🗡️ Toji Fushiguro|5,🎩 Hange Titan|3"],[3,"👁️ Pain|6,🌑 Aizen Sosuke|8,🐉 Kaido|5,🍰 Charlotte Linlin|4,🌊 Edward Newgate|6,👊 Monkey D. Garp|2,🌋 Akainu|9,🧊 Aokiji|8,⚡ Kizaru|2,🕷️ Chrollo Lucilfer|3,👑 Meruem|7,🧓 Isaac Netero|2,🩸 Makima|3,🪚 Denji|4,🗡️ Genos Cyborg|9"],[4,"⚔️ Sung Jin-Woo|7,😼 Beerus|6,⚫ Yhwach|8,🧛 Dio Brando|4,😈 Anos Voldigoad|5,🌹 Alucard|7,🕶️ Cid Kagenou|9,🌌 Jotaro Kujo|2"]]).flatMap(([r,t])=>t.split(",").map(x=>{const[y,ab]=x.split("|");return{r,e:y.split(" ")[0],n:y.slice(y.indexOf(" ")+1),ab:ab==null?null:+ab}})).map((c,i)=>(c.id=i,c));
+async function tradeNew(){const g=+$("tg").value,w=+$("tw").value;if(!$("tg").value||!(cards[g]>0))return toast("Choisis une carte que tu possèdes");if(g==w)return toast("Choisis une carte différente");
+ cards[g]--;if(!cards[g])delete cards[g];save();
+ try{await DB.collection("trades").add({u:me,fn:$("name").value||"Anonyme",give:g,want:w,st:"open",t:Date.now()});toast("📨 Offre publiée !");show("tr")}catch(e){cards[g]=(cards[g]||0)+1;save();toast("Erreur : carte rendue")}}
+async function tradeCancel(id){const r=DB.collection("trades").doc(id);try{const a=await r.acquire({holder:me,ttlMs:8000});if(!a.acquired)return toast("Réessaie dans un instant");
+ const d=(await r.get()).data();if(!d||d.st!="open")return toast("Offre déjà prise");await r.delete();cards[d.give]=(cards[d.give]||0)+1;save();toast("Offre annulée, carte récupérée");show("tr")}catch(e){toast("Erreur")}}
+async function tradeAccept(id){const r=DB.collection("trades").doc(id);try{const a=await r.acquire({holder:me,ttlMs:8000});if(!a.acquired)return toast("Réessaie dans un instant");
+ const d=(await r.get()).data();if(!d||d.st!="open")return toast("Offre déjà prise");if(d.u==me)return;if(!(cards[d.want]>0))return toast("Tu n'as pas la carte demandée");
+ await r.update({st:"done"});cards[d.want]--;if(!cards[d.want])delete cards[d.want];cards[d.give]=(cards[d.give]||0)+1;save();toast("🔄 Échange réussi !");show("tr")}catch(e){toast("Erreur")}}
+function trMine(q){q.docs.forEach(x=>{const d=x.data();if(d.st=="done"&&!doneSeen[x.id]){doneSeen[x.id]=1;cards[d.want]=(cards[d.want]||0)+1;save();toast("🔄 Échange accepté ! +"+D[d.want].e+" "+D[d.want].n);DB.collection("trades").doc(x.id).update({st:"closed"}).catch(()=>{})}})}
+function rtr(){const L=$("trl");if(!L)return;L.innerHTML=OPEN.length?"":"<small>Aucune offre pour l'instant</small>";
+ OPEN.forEach(t=>{const g=D[t.give],w=D[t.want];if(!g||!w)return;const mine=t.u==me,row=document.createElement("div"),tx=document.createElement("span"),b=document.createElement("button");row.className="sk";
+  tx.textContent=(mine?"Toi":(t.fn||"Un ami"))+" : "+g.e+" "+g.n+" ("+RN[g.r]+") → "+w.e+" "+w.n+" ("+RN[w.r]+")";
+  b.className="b"+(mine?"":" p");b.textContent=mine?"Annuler":"Accepter";b.disabled=!mine&&!cards[t.want];b.onclick=()=>mine?tradeCancel(t.id):tradeAccept(t.id);row.append(tx,b);L.appendChild(row)})}
+const AVS=["🦊","🐱","🐺","🐼","🐸","🐲","🦄","🤖","👾","🥷","🧙","👑","🌸","🔥","⚡","🎃"];let pav="🦊";
+const fmt=ms=>Math.floor(ms/36e5)+"h"+String(Math.floor(ms%36e5/6e4)).padStart(2,"0");
+function bdg(){nav()}setInterval(bdg,20000);
+function prof(){$("hav").innerHTML=avSVG(1);frApply();$("hn").textContent=$("name").value||"Joueur"}
+function showLogin(edit){$("ln").readOnly=true;$("ln").value=$("name").value;$("ld").value=dc;pav=av;$("lav").innerHTML=AVS.map(a=>`<button class="${a==pav?"on":""}" onclick="pickAv('${a}')">${a}</button>`).join("");
+  $("lgt").textContent=edit?"Mon profil":"Bienvenue 🎰";$("lgx").style.display=edit?"":"none";$("lgl").style.display="none";$("lgb").style.display="block";$("lg").style.display="flex"}
+function pickAv(a){pav=a;document.querySelectorAll("#lav button").forEach(b=>b.classList.toggle("on",b.textContent==a))}
+function saveLogin(){const n=$("ln").value.trim();if(n.length<2)return toast("Pseudo trop court (2 caractères min)");$("name").value=n;av=pav;dc=$("ld").value.trim();$("lg").style.display="none";prof();save();daily()}
+const cst=c=>{const k=c.ab!=null?1.15:1;return{hp:Math.round(([70,90,115,150,200,260,340][c.r]+c.id*7%25)*k),atk:Math.round(([10,13,17,22,29,37,48][c.r]+c.id*3%5)*k),sp:c.ab!=null?c.ab:c.id%4}},AB=["Soin","Garde","Frappe Double","Poison","Vampirisme","Rage","Tempête","Renaissance","Égide","Brûlure"];
+let DU=[],duelSeen={},BT=[],BS=null,RP="r";
+function dch(){return{sk:"#f5d0b0",hc:"#2b1b17",ec:"#3b82f6",bc:"#e84a5f",bp:0,eq:{}}}
+const CAT=`hs|h1|Cheveux Pointus|0|
+hs|h2|Longs Cheveux|0|
+hs|h3|Couettes|1|
+hs|h4|Chignon|1|
+tp|tp1|T-shirt Blanc|0|#f3f4f6:tee
+tp|tp2|Hoodie Rouge|0|#d63a3a:hood
+tp|tp3|Uniforme Scolaire|1|#1e3a8a:uni
+tp|tp4|Kimono Bleu|2|#2563eb:kim
+tp|tp5|Armure Dorée|3|#e6b422:arm
+tp|tp6|Veste Shinigami|2|#111827:kim
+cp|cp1|Cape Rouge|1|#c0392b
+cp|cp2|Cape de Ninja|2|#1f2937
+cp|cp3|Cape Galaxie|3|#5b21b6
+ht|ht1|Haut-de-forme|0|🎩
+ht|ht2|Casquette|0|🧢
+ht|ht3|Chapeau de Paille|1|👒
+ht|ht4|Couronne|3|👑
+ht|ht5|Ruban|0|🎀
+ht|ht6|Casque|1|🪖
+ht|ht7|Fleurs|1|🌸
+fc|fc1|Lunettes de soleil|0|🕶️
+fc|fc2|Masque|1|😷
+pt|pt1|Chat|0|🐱
+pt|pt2|Chien|0|🐶
+pt|pt3|Grenouille|0|🐸
+pt|pt4|Renard|1|🦊
+pt|pt5|Panda|1|🐼
+pt|pt6|Pingouin|1|🐧
+pt|pt7|Hibou|2|🦉
+pt|pt8|Mini-dragon|2|🐲
+pt|pt9|Dragon|3|🐉
+pt|pt10|Licorne|3|🦄
+tp|tp7|Tenue d'Aventurier|2|#d9c7a3:adv
+sc|sc1|Écharpe Bleue|1|#3b5b7a
+sc|sc2|Écharpe Rouge|0|#c0392b
+sc|sc3|Foulard Violet|1|#7c3aed
+sc|sc4|Écharpe Dorée|2|#e6b422
+au|au1|Aura Dorée|2|#ffd700
+au|au2|Aura Violette|2|#a855f7
+au|au3|Aura Arc-en-ciel|4|#ff4fd8
+au|au4|Aura Feu|3|#ff6b2c`.split("\n").map(l=>{const[s,id,n,r,v]=l.split("|");return{s,id,n,r:+r,v}});
+const shd=(h,k)=>"#"+[1,3,5].map(i=>Math.max(0,Math.min(255,Math.round(parseInt(h.substr(i,2),16)*k))).toString(16).padStart(2,"0")).join("");
+const HF="M65 58C60 40 62 24 76 16L72 6L88 12L92 0L102 11L112 2L116 13L130 8L125 20C140 28 142 44 135 58C132 46 126 40 118 38L112 46L104 36L96 46L88 37C78 40 70 46 65 58Z";
+const HS={h0:{b:"",f:HF},
+h1:{b:"",f:"M63 58C56 40 60 26 70 18L60 0L82 10L88 -6L98 8L110 -10L116 8L134 -2L128 16C142 26 144 42 137 58C132 44 124 38 116 40L108 50L100 38L92 50L84 40C74 40 68 46 63 58Z"},
+h2:{b:"M62 40Q52 120 64 166L86 152L114 152L136 166Q148 120 138 40Z",f:HF},
+h3:{b:"M66 44Q26 60 30 134Q32 154 46 146Q50 104 70 76ZM134 44Q174 60 170 134Q168 154 154 146Q150 104 130 76Z",f:HF},
+h4:{b:"M84 14Q100 -18 116 14Z",f:HF}};
+function fig(back){const c=ch,e=c.eq||{},I=id=>CAT.find(x=>x.id==id)||{},sk=c.sk,sd=shd(sk,.8),hs=HS[e.hs]||HS.h0,hc=c.hc,hk=shd(hc,.55);
+ const tp=e.tp?I(e.tp).v.split(":"):null,col=tp?tp[0]:"",sty=tp?tp[1]:"",full=sty=="adv"||sty=="uni",pc=sty=="adv"?"#8a5a33":"#1f2a44",ds=tp?shd(col,.78):"";
+ const sc=e.sc?I(e.sc).v:null;let o="";
+ if(e.au)o+=`<circle cx="100" cy="170" r="150" fill="${I(e.au).v}" opacity=".25"/>`;
+ if(e.cp&&!back)o+=`<path d="M58 112Q100 98 142 112L158 302Q100 322 42 302Z" fill="${shd(I(e.cp).v,.8)}"/>`;
+ if(hs.b)o+=`<path d="${hs.b}" fill="url(#hg)" stroke="${hk}" stroke-width="1"/>`;
+ o+=`<path d="M75 204Q73 250 80 308L96 308Q99 250 100 206Z" fill="url(#sg)"/><path d="M125 204Q127 250 120 308L104 308Q101 250 100 206Z" fill="url(#sg)"/>`;
+ if(!full)o+=`<ellipse cx="88" cy="312" rx="13" ry="6" fill="${sd}"/><ellipse cx="112" cy="312" rx="13" ry="6" fill="${sd}"/>`;
+ o+=`<path d="M91 92V114Q100 120 109 114V92Z" fill="${sd}"/><path d="M72 108Q100 100 128 108Q138 112 138 130L134 192Q132 202 124 204H76Q68 202 66 192L62 130Q62 112 72 108Z" fill="url(#sg)"/>`;
+ o+=`<path d="M63 114Q50 118 49 134L45 180Q44 190 52 191Q60 191 61 181L68 136Z" fill="url(#sg)"/><path d="M137 114Q150 118 151 134L155 180Q156 190 148 191Q140 191 139 181L132 136Z" fill="url(#sg)"/><circle cx="52" cy="195" r="7" fill="${sk}"/><circle cx="148" cy="195" r="7" fill="${sk}"/>`;
+ if(!tp&&!back)o+=`<path d="M82 118Q100 124 118 118M80 142Q100 154 120 142" stroke="${sd}" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="100" cy="178" r="1.6" fill="${sd}"/>`;
+ if(full)o+=`<path d="M72 196H128L131 302H103L100 228L97 302H69Z" fill="${pc}"/><path d="M100 228V300" stroke="${shd(pc,.7)}" stroke-width="1.5"/>`;
+ else{const bc=c.bc,bp=[ "",[80,92,116,124].map(x=>`<circle cx="${x}" cy="204" r="3.5" fill="#fff"/>`).join(""),[78,90,102,114,126].map(x=>`<rect x="${x}" y="196" width="4" height="26" fill="#fff" opacity=".55"/>`).join(""),`<text x="80" y="212" font-size="14" fill="#fff">♥</text><text x="106" y="212" font-size="14" fill="#fff">♥</text>`][c.bp||0];
+  o+=`<path d="M70 192H130L133 228Q118 232 103 228L100 214L97 228Q82 232 67 228Z" fill="${bc}"/>${bp}<rect x="70" y="190" width="60" height="8" rx="3" fill="${shd(bc,.75)}"/>`}
+ if(sty=="adv")o+=`<path d="M70 296H98V320Q98 328 86 328H72Q67 328 68 320Z" fill="#6b4326"/><path d="M130 296H102V320Q102 328 114 328H128Q133 328 132 320Z" fill="#6b4326"/><rect x="66" y="323" width="34" height="6" rx="3" fill="#2b1a10"/><rect x="100" y="323" width="34" height="6" rx="3" fill="#2b1a10"/>`;
+ if(sty=="uni")o+=`<ellipse cx="86" cy="312" rx="14" ry="7" fill="#111"/><ellipse cx="114" cy="312" rx="14" ry="7" fill="#111"/>`;
+ if(tp){const lg=sty!="tee"&&sty!="arm";
+  o+=`<path d="M72 108Q100 100 128 108Q138 112 138 130L135 198Q132 206 124 208H76Q68 206 65 198L62 130Q62 112 72 108Z" fill="${col}"/>`;
+  o+=lg?`<path d="M63 114Q50 118 49 134L45 176L62 178L68 136Z" fill="${col}"/><path d="M137 114Q150 118 151 134L155 176L138 178L132 136Z" fill="${col}"/>`:`<path d="M63 114Q50 118 49 134L48 150L64 152L68 136Z" fill="${col}"/><path d="M137 114Q150 118 151 134L152 150L136 152L132 136Z" fill="${col}"/>`;
+  if(sty=="adv"){o+=`<path d="M45 172L62 174L61 183L44 181Z" fill="#7a4a2a"/><path d="M155 172L138 174L139 183L156 181Z" fill="#7a4a2a"/><path d="M72 112L122 200M128 112L78 200" stroke="#7a4a2a" stroke-width="5"/><rect x="66" y="194" width="68" height="9" fill="#5a3a22"/><rect x="118" y="198" width="17" height="19" rx="3" fill="#7a4a2a"/><path d="M80 150Q100 158 120 150" stroke="${ds}" stroke-width="1.5" fill="none"/>`;if(!back)o+=`<rect x="94" y="146" width="12" height="10" rx="2" fill="#c9a24b"/><path d="M86 106L100 126L114 106Z" fill="${ds}"/>`}
+  if(sty=="uni"&&!back)o+=`<path d="M86 106L100 124L114 106Z" fill="#fff"/><path d="M97 114L103 114L105 152L100 158L95 152Z" fill="#b91c1c"/>`;
+  if(sty=="kim"){o+=`<path d="M64 192H136L142 266H58Z" fill="${col}"/><rect x="62" y="188" width="76" height="12" fill="${ds}"/>`;if(!back)o+=`<path d="M86 106L100 150L114 106" stroke="#fff" stroke-width="4" fill="none"/>`}
+  if(sty=="hood"){o+=`<path d="M78 104Q100 124 122 104L130 114Q100 138 70 114Z" fill="${ds}"/>`;if(!back)o+=`<path d="M80 168H120L116 192H84Z" fill="${ds}" opacity=".7"/>`}
+  if(sty=="arm"){o+=`<path d="M76 112Q100 104 124 112L120 172Q100 182 80 172Z" fill="${shd(col,1.15)}" stroke="${ds}" stroke-width="2"/><circle cx="60" cy="118" r="13" fill="${col}" stroke="${ds}" stroke-width="2"/><circle cx="140" cy="118" r="13" fill="${col}" stroke="${ds}" stroke-width="2"/><rect x="66" y="188" width="68" height="10" fill="${ds}"/>`}}
+ if(sc)o+=`<path d="M76 96Q100 112 124 96L132 114Q100 136 68 114Z" fill="${sc}"/><path d="M68 114Q100 136 132 114" stroke="${shd(sc,.7)}" stroke-width="2" fill="none"/><path d="M106 122L126 170L108 164Z" fill="${shd(sc,.85)}"/>`;
+ if(e.cp&&back)o+=`<path d="M58 112Q100 98 142 112L158 302Q100 322 42 302Z" fill="${shd(I(e.cp).v,.85)}"/>`;
+ if(back){o+=`<path d="M64 52Q60 14 100 10Q140 14 136 52Q138 86 118 100Q100 108 82 100Q62 86 64 52Z" fill="url(#hg)" stroke="${hk}" stroke-width="1"/><path d="${hs.f}" fill="url(#hg)" stroke="${hk}" stroke-width="1"/><path d="M76 40Q100 28 124 40" stroke="#fff" opacity=".2" stroke-width="3" fill="none" stroke-linecap="round"/>`;return o}
+ o+=`<ellipse cx="66" cy="58" rx="5" ry="8" fill="${sk}"/><ellipse cx="134" cy="58" rx="5" ry="8" fill="${sk}"/><path d="M68 48Q67 20 100 18Q133 20 132 48Q132 80 114 92Q100 100 86 92Q68 80 68 48Z" fill="url(#sg)"/>`;
+ for(const x of[86,114])o+=`<ellipse cx="${x}" cy="59" rx="9.5" ry="10.5" fill="#fff"/><ellipse cx="${x}" cy="61" rx="6.8" ry="8.8" fill="url(#ig)"/><ellipse cx="${x}" cy="62" rx="3.2" ry="4.6" fill="#140c10"/><circle cx="${x+2.5}" cy="57.5" r="2.7" fill="#fff"/><circle cx="${x-2.5}" cy="64" r="1.3" fill="#fff" opacity=".8"/><path d="M${x-10} 56Q${x} 46 ${x+10} 56" stroke="#241410" stroke-width="2.8" fill="none" stroke-linecap="round"/><path d="M${x-10} 45Q${x} 39 ${x+10} 44" stroke="${hk}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+ o+=`<path d="M100 68Q103 73 99 74" stroke="${sd}" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M92 82Q100 88 108 82" stroke="#7a3b32" stroke-width="2.2" fill="none" stroke-linecap="round"/><ellipse cx="77" cy="73" rx="6" ry="3.5" fill="#ff7a8a" opacity=".4"/><ellipse cx="123" cy="73" rx="6" ry="3.5" fill="#ff7a8a" opacity=".4"/>`;
+ o+=`<path d="${hs.f}" fill="url(#hg)" stroke="${hk}" stroke-width="1"/><path d="M80 24Q92 14 106 20M120 22Q126 24 128 30" stroke="#fff" opacity=".28" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
+ if(e.ht)o+=`<text x="100" y="26" font-size="46" text-anchor="middle">${I(e.ht).v}</text>`;
+ if(e.fc)o+=`<text x="100" y="74" font-size="46" text-anchor="middle">${I(e.fc).v}</text>`;
+ if(e.pt)o+=`<text x="172" y="326" font-size="40" text-anchor="middle">${I(e.pt).v}</text>`;
+ return o}
+function avSVG(m){const c=ch,df=`<defs><radialGradient id="sg" cx=".5" cy=".4" r=".7"><stop offset="0" stop-color="${shd(c.sk,1.06)}"/><stop offset="1" stop-color="${shd(c.sk,.88)}"/></radialGradient><linearGradient id="hg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${shd(c.hc,1.4)}"/><stop offset="1" stop-color="${shd(c.hc,.75)}"/></linearGradient><radialGradient id="ig" cx=".5" cy=".35" r=".7"><stop offset="0" stop-color="${shd(c.ec,1.6)}"/><stop offset=".6" stop-color="${c.ec}"/><stop offset="1" stop-color="${shd(c.ec,.5)}"/></radialGradient></defs>`,A='xmlns="http://www.w3.org/2000/svg"';
+ if(m==1)return `<svg ${A} viewBox="46 -10 108 126" style="width:100%;height:100%">${df}${fig(0)}</svg>`;
+ if(m==0)return `<svg ${A} viewBox="0 -14 200 354" style="width:100%;height:100%">${df}${fig(0)}</svg>`;
+ return `<svg ${A} viewBox="0 0 640 360" style="width:100%;height:auto;max-height:440px">${df}<svg x="0" y="0" width="250" height="360" viewBox="26 -14 148 206">${fig(0)}</svg><svg x="255" y="5" width="190" height="350" viewBox="0 -14 200 354">${fig(0)}</svg><svg x="450" y="5" width="190" height="350" viewBox="0 -14 200 354">${fig(1)}</svg></svg>`}
+
+function addTab(k){if(!GR[4][1].includes(k))GR[4][1].push(k);nav()}
+async function adGive(){const u=norm($("au").value),a=parseInt($("aa").value);if(!u||!a)return toast("Identifiant + montant requis");try{await DB.collection("gifts").add({to:u,amt:a,t:Date.now()});toast("✅ "+u+" : "+(a>0?"+":"")+a+" 🪙")}catch(e){toast("Refusé : "+((e&&e.code)||"admin uniquement"))}}
+async function adL(){const L=$("al");if(!L)return;try{const q=await DB.collection("pl").orderBy("bal","desc").limit(50).get();L.innerHTML="";q.docs.forEach(x=>{const d=x.data(),b=document.createElement("button");b.className="b";b.style.margin="3px";b.textContent=x.id+" · "+d.bal+" 🪙";b.onclick=()=>$("au").value=x.id;L.appendChild(b)})}catch(e){}}
+const RPE={r:"✊",p:"✋",c:"✌️"},BEATS={r:"c",p:"r",c:"p"};
+function rrp(){const L=$("rl");if(!L)return;L.innerHTML=DU.length?"":"<small>Aucun défi ouvert</small>";DU.forEach(d=>{const mine=d.u==me,row=document.createElement("div"),tx=document.createElement("span"),b=document.createElement("button");row.className="sk";tx.textContent=(mine?"Toi":d.fn)+" mise "+d.bet+" 🪙";b.className="b"+(mine?"":" p");b.textContent=mine?"Annuler":"Relever avec "+RPE[RP];b.disabled=!mine&&bal<d.bet;b.onclick=()=>mine?rpCancel(d.id):rpAccept(d.id);row.append(tx,b);L.appendChild(row)})}
+async function rpNew(){const b=bet();if(!b)return toast("Mise invalide");bal-=b;save();try{await DB.collection("duels").add({u:me,fn:me,bet:b,p:RP,st:"open",t:Date.now()});toast("⚔️ Défi lancé ("+b+" 🪙)")}catch(e){bal+=b;save();toast("Erreur")}}
+async function rpCancel(id){const r=DB.collection("duels").doc(id);try{const a=await r.acquire({holder:me,ttlMs:8000});if(!a.acquired)return toast("Réessaie");const d=(await r.get()).data();if(!d||d.st!="open")return toast("Déjà relevé");await r.delete();bal+=d.bet;save();toast("Défi annulé")}catch(e){toast("Erreur")}}
+async function rpAccept(id){const r=DB.collection("duels").doc(id);try{const a=await r.acquire({holder:me,ttlMs:8000});if(!a.acquired)return toast("Réessaie");const d=(await r.get()).data();if(!d||d.st!="open"||d.u==me)return toast("Défi indisponible");if(bal<d.bet)return toast("Pas assez de jetons");
+ await r.update({st:"done",b:me,bp:RP});bal-=d.bet;const w=BEATS[RP]==d.p?2:RP==d.p?1:0;bal+=d.bet*w;save();toast(RPE[RP]+" vs "+RPE[d.p]+" : "+(w==2?"Gagné ! +"+d.bet:w?"Égalité":"Perdu −"+d.bet)+" 🪙")}catch(e){toast("Erreur")}}
+function rpMine(q){q.docs.forEach(x=>{const d=x.data();if(d.st=="done"&&!duelSeen[x.id]){duelSeen[x.id]=1;const w=BEATS[d.p]==d.bp?2:d.p==d.bp?1:0;bal+=d.bet*w;save();toast("⚔️ "+d.b+" : "+RPE[d.p]+" vs "+RPE[d.bp]+" → "+(w==2?"Gagné ! +"+d.bet:w?"Égalité":"Perdu −"+d.bet)+" 🪙");DB.collection("duels").doc(x.id).update({st:"closed"}).catch(()=>{})}})}
+function hit(a,d,m){let x=Math.round(a.atk*m*(.85+Math.random()*.3));if(d.sh){x=Math.round(x/2);d.sh=0}d.hp=Math.max(0,d.hp-x);return x}
+function go(a,d,k,L){if(k=="a")return L(a.c.n+" attaque : −"+hit(a,d,1));const s=a.sp,n=a.c.n;
+ if(s==0){const h=Math.round(a.max*.3);a.hp=Math.min(a.max,a.hp+h);L(n+" se soigne +"+h)}
+ else if(s==1){a.sh=1;L(n+" lève sa garde 🛡️")}
+ else if(s==2)L(n+" Frappe Double : −"+hit(a,d,2.2));
+ else if(s==3){d.po=3;L(n+" empoisonne ! −"+hit(a,d,.8))}
+ else if(s==4){const x=hit(a,d,1.2);a.hp=Math.min(a.max,a.hp+x);L(n+" Vampirisme : −"+x+" (+"+x+" PV)")}
+ else if(s==5){a.atk=Math.round(a.atk*1.4);L(n+" Rage ! ATQ +40% −"+hit(a,d,1))}
+ else if(s==6)L(n+" Tempête ! −"+hit(a,d,3));
+ else if(s==7){const h=Math.round(a.max*.5);a.hp=Math.min(a.max,a.hp+h);L(n+" Renaissance +"+h)}
+ else if(s==8){a.sh=1;L(n+" Égide 🛡️ −"+hit(a,d,1))}
+ else{d.po=4;L(n+" Brûlure ! −"+hit(a,d,1.2))}}
+const mkF=(c,m)=>{const s=cst(c),hp=Math.round(s.hp*m);return{c,hp,max:hp,atk:Math.round(s.atk*m),sp:s.sp,sh:0,po:0}};
+function bRender(){const B=BS,a=B.T.find(x=>x.hp>0)||B.T[0],e=B.E.find(x=>x.hp>0)||B.E[0],bar=x=>`<div style="background:#0006;border-radius:6px;overflow:hidden;height:10px;width:100%"><div style="width:${Math.round(100*x.hp/x.max)}%;height:10px;background:${x.hp/x.max>.4?"#22c55e":"#ef4444"}"></div></div>`;
+ const fc=x=>`<div class="cd f" style="--rc:${RC[x.c.r]};width:130px;height:170px"><span>${x.c.e}</span><em>${x.c.n}</em><small>${x.hp}/${x.max} ${x.sh?"🛡️":""}${x.po?"☠️":""}</small>${bar(x)}</div>`;
+ $("bf").innerHTML=`<div class="row" style="justify-content:space-around">${fc(a)}<b>VS</b>${fc(e)}</div><div style="text-align:center">${B.T.map(x=>x.hp>0?"❤️":"💀").join(" ")} &nbsp;|&nbsp; ${B.E.map(x=>x.hp>0?"❤️":"💀").join(" ")}</div><div class="msg">${B.log.slice(-4).join("<br>")}</div>`+(B.over?`<button class="b p" onclick="bEnd()">Terminer</button>`:`<div class="row"><button class="b p" onclick="bAct('a')">⚔️ Attaque</button><button class="b" ${B.cd?"disabled":""} onclick="bAct('s')">✨ ${AB[a.sp]}${B.cd?" ("+B.cd+")":""}</button></div>`)}
+function applySkin(){const s=SK[skin]||SK.classic,r=document.documentElement.style;if(skin=="classic")r.removeProperty("--ac");else r.setProperty("--ac",s.c[2]);$("ti").textContent=s.i+" Mini-Casino"}
+function toast(t){const e=document.createElement("div");e.className="toast";e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),2600)}
+function daily(){const t=new Date().toISOString().slice(0,10);if(day!==t){const y=new Date(Date.now()-864e5).toISOString().slice(0,10),S=stk();S.n=S.l==y?S.n+1:1;S.l=t;try{localStorage.setItem("cstk_"+me,JSON.stringify(S))}catch(e){}const g=200+Math.min(S.n,30)*20+({7:1000,30:5000,100:20000}[S.n]||0);day=t;bal+=g;toast("🎁 Jour "+S.n+" de série 🔥 : +"+g+" 🪙");save()}}
+const games={
+bj:{n:"🃏 Blackjack",init(){
+  let d,P,D,b,on=false;
+  const val=h=>{let t=0,a=0;h.forEach(c=>{t+=c.v>10?10:c.v==1?(a++,11):c.v});while(t>21&&a--)t-=10;return t};
+  const lab=c=>["","A",2,3,4,5,6,7,8,9,10,"J","Q","K"][c.v]+c.s;
+  const hand=(h,hide)=>h.map((c,i)=>hide&&i?`<div class="c h">?</div>`:`<div class="c ${"♥♦".includes(c.s)?"r":""}">${lab(c)}</div>`).join("");
+  const draw=()=>d.pop();
+  const ui=()=>{$("p").innerHTML=hand(P);$("d").innerHTML=hand(D,on);$("pv").textContent=val(P);$("dv").textContent=on?"":val(D);$("hit").disabled=$("stand").disabled=!on;$("deal").disabled=on};
+  const end=(m,x)=>{on=false;ui();pay(m,x)};
+  window.bjDeal=()=>{b=bet();if(!b)return($("m").textContent="Mise invalide");
+    d=[];for(const s of"♠♥♦♣")for(let v=1;v<=13;v++)d.push({v,s});d.sort(()=>Math.random()-.5);
+    bal-=b;save();P=[draw(),draw()];D=[draw(),draw()];on=true;$("m").textContent="";ui();
+    if(val(P)==21){on=false;ui();const w=Math.floor(b*2.5);pay("Blackjack ! +"+(w-b),w)}};
+  window.bjHit=()=>{P.push(draw());if(val(P)>21)end("Bust ! −"+b,0);else{ui();if(val(P)==21)bjStand()}};
+  window.bjStand=()=>{on=false;while(val(D)<17)D.push(draw());ui();const p=val(P),q=val(D);
+    if(q>21||p>q)pay("Gagné ! +"+b,b*2);else if(p==q)pay("Égalité",b);else pay("Perdu −"+b,0)};
+  return `${betUI()}<div class="row"><b>Croupier</b> <span id="dv"></span></div><div class="cards" id="d"></div>
+  <div class="row"><b>Toi</b> <span id="pv"></span></div><div class="cards" id="p"></div><div class="msg" id="m"></div>
+  <div class="row"><button class="b p" id="deal" onclick="bjDeal()">Distribuer</button><button class="b" id="hit" onclick="bjHit()" disabled>Tirer</button><button class="b" id="stand" onclick="bjStand()" disabled>Rester</button></div>`}},
+ro:{n:"🎡 Roulette",init(){
+  const R=[1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36],O=[0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26],A=Math.PI*2/37;let rot=0;
+  setTimeout(()=>{const cv=$("wh");if(!cv)return;const x=cv.getContext("2d");x.translate(150,150);
+    O.forEach((n,i)=>{x.beginPath();x.moveTo(0,0);x.arc(0,0,150,-Math.PI/2+(i-.5)*A,-Math.PI/2+(i+.5)*A);x.fillStyle=n==0?"#1f9d55":R.includes(n)?"#d94343":"#1a1a1a";x.fill();
+      x.save();x.rotate(i*A);x.fillStyle="#fff";x.font="bold 15px sans-serif";x.textAlign="center";x.fillText(n,0,-128);x.restore()});
+    x.beginPath();x.arc(0,0,40,0,7);x.fillStyle=getComputedStyle(document.documentElement).getPropertyValue("--ac");x.fill()},0);
+  window.spin=t=>{const b=bet();if(!b)return($("m").textContent="Mise invalide");busy=true;bal-=b;save();$("m").textContent="";
+    const n=rnd(37),i=O.indexOf(n);rot+=1800+((-i*360/37-rot)%360+360)%360;$("wh").style.transform=`rotate(${rot}deg)`;
+    setTimeout(()=>{const red=R.includes(n);$("n").textContent=n;$("n").style.background=n==0?"var(--gr)":red?"var(--rd)":"var(--bk)";
+      const w=t=="r"?red:t=="b"?(n>0&&!red):t=="e"?(n>0&&n%2==0):t=="o"?n%2==1:n==0,m=t=="z"?36:2;
+      w?pay("🎉 "+n+" ! +"+b*(m-1),b*m):pay(n+" — perdu −"+b,0)},4500)};
+  return `${betUI()}<div class="wheel"><i>▼</i><canvas id="wh" width="300" height="300"></canvas></div><div class="num" id="n" style="width:64px;height:64px;line-height:64px;font-size:34px">?</div><div class="msg" id="m" style="text-align:center"></div>
+  <div class="row"><button class="b" style="background:var(--rd)" onclick="spin('r')">Rouge x2</button><button class="b" style="background:#000" onclick="spin('b')">Noir x2</button>
+  <button class="b" onclick="spin('e')">Pair x2</button><button class="b" onclick="spin('o')">Impair x2</button><button class="b" style="background:var(--gr)" onclick="spin('z')">Zéro x36</button></div>`}},
+sl:{n:"🍒 Machine à sous",init(){
+  const S=SK[skin].s;
+  window.pull=()=>{const b=bet();if(!b)return($("m").textContent="Mise invalide");busy=true;bal-=b;save();$("m").textContent="";
+    const r=[rnd(6),rnd(6),rnd(6)],el=[0,1,2].map(i=>$("r"+i));el.forEach(e=>e.className="reel sp");
+    const iv=setInterval(()=>el.forEach(e=>e.classList.contains("sp")&&(e.textContent=S[rnd(6)])),80);
+    [0,1,2].forEach(i=>setTimeout(()=>{el[i].className="reel";el[i].textContent=S[r[i]];
+      if(i==2){clearInterval(iv);const u=new Set(r).size;let x=0;if(u==1)x=r[0]==5?25:10;else if(u==2)x=1.5;
+        if(x)el.forEach(e=>e.classList.add("win"));
+        x?pay("Gagné ! +"+Math.floor(b*x-b),Math.floor(b*x)):pay("Perdu −"+b,0)}},900+i*550))};
+  return `${betUI()}<div class="reels"><div class="reel" id="r0">❔</div><div class="reel" id="r1">❔</div><div class="reel" id="r2">❔</div></div><div class="msg" id="m" style="text-align:center"></div><button class="b p" onclick="pull()">Lancer</button> <small>3 identiques x10 (7️⃣ x25), 2 identiques x1.5</small>`}},
+dc:{n:"🎲 Dés",init(){
+  const F="⚀⚁⚂⚃⚄⚅";
+  window.roll=t=>{const b=bet();if(!b)return($("m").textContent="Mise invalide");busy=true;bal-=b;save();$("m").textContent="";
+    const e=$("dc");e.classList.add("sp");const iv=setInterval(()=>e.textContent=F[rnd(6)]+" "+F[rnd(6)],90);
+    setTimeout(()=>{clearInterval(iv);e.classList.remove("sp");const a=rnd(6),c=rnd(6),s=a+c+2;e.textContent=F[a]+" "+F[c];
+      const w=t=="l"?s<7:t=="h"?s>7:s==7,g=Math.floor(b*(t=="s"?5:2.3));
+      w?pay("Total "+s+" ! +"+(g-b),g):pay("Total "+s+" — perdu −"+b,0)},1300)};
+  return `${betUI()}<div class="big"><span class="dice" id="dc">⚀ ⚀</span></div><div class="msg" id="m" style="text-align:center"></div>
+  <div class="row"><button class="b p" onclick="roll('l')">Moins de 7 x2.3</button><button class="b p" onclick="roll('s')">Exactement 7 x5</button><button class="b p" onclick="roll('h')">Plus de 7 x2.3</button></div>`}},
+cf:{n:"🪙 Pile ou face",init(){
+  window.flip=c=>{const b=bet();if(!b)return($("m").textContent="Mise invalide");bal-=b;save();
+    const r=rnd(2);$("big").textContent=r?"🙂 Pile":"🦅 Face";
+    r==c?pay("Gagné ! +"+b,b*2):pay("Perdu −"+b,0)};
+  return `${betUI()}<div class="big" id="big">🪙</div><div class="msg" id="m"></div>
+  <div class="row"><button class="b p" onclick="flip(1)">Pile</button><button class="b p" onclick="flip(0)">Face</button></div>`}},
+hl:{n:"⬆️ Plus ou moins",init(){
+  let c=1+rnd(13);
+  window.hl=up=>{const b=bet();if(!b)return($("m").textContent="Mise invalide");bal-=b;save();
+    const n=1+rnd(13),ok=up?n>c:n<c;$("big").textContent=c+" → "+n;c=n;
+    ok?pay("Gagné ! +"+Math.floor(b*.9),Math.floor(b*1.9)):pay("Perdu −"+b,0)};
+  return `${betUI()}<div class="big" id="big">${c}</div><div class="msg" id="m"></div>
+  <div class="row"><button class="b p" onclick="hl(1)">Plus haut</button><button class="b p" onclick="hl(0)">Plus bas</button></div><small>Carte de 1 à 13. Égalité = perdu. Gain x1.9.</small>`}},
+gr:{n:"🎟️ Grattage",init(){
+  const S=SK[skin].s;let cells=[],opened=0,price=0,mult=0,live=false;
+  window.buy=()=>{const b=bet();if(!b)return($("m").textContent="Mise invalide");busy=true;bal-=b;save();price=b;opened=0;live=true;$("m").textContent="Gratte les 6 cases !";
+    const r=Math.random(),sy=[0,1,2,3,4,5].sort(()=>Math.random()-.5);mult=r<.02?20:r<.07?5:r<.2?2:0;
+    cells=(mult?[0,0,0,1,2,3]:[0,0,1,1,2,2]).map(i=>sy[i]).sort(()=>Math.random()-.5);
+    $("sc").innerHTML=cells.map((c,i)=>`<button onclick="scr(${i},this)">❔</button>`).join("");$("bt").disabled=true};
+  window.scr=(i,e)=>{if(!live||e.classList.contains("o"))return;e.classList.add("o");e.textContent=S[cells[i]];
+    if(++opened==6){live=false;$("bt").disabled=false;mult?pay("🎉 Ticket gagnant ! +"+price*(mult-1),price*mult):pay("Perdu −"+price,0)}};
+  return `${betUI()}<div class="sc" id="sc">${"<button disabled>🎟️</button>".repeat(6)}</div><div class="msg" id="m" style="text-align:center"></div>
+  <div class="row"><button class="b p" id="bt" onclick="buy()">Acheter un ticket</button><button class="b" onclick="document.querySelectorAll('#sc button:not(.o)').forEach(b=>b.click())">Tout gratter</button></div><small>3 symboles identiques = gagné (x2, x5 ou x20)</small>`}},
+bo:{n:"📦 Boosters",init(){
+  const PK=[{n:"Booster Gratuit",p:0,k:3,w:[70,22,6,1.8,.2,0,0],g:0,free:1},{n:"Booster Bronze",p:300,k:3,w:[70,22,6,1.8,.2,0,0],g:0},{n:"Booster Argent",p:900,k:5,w:[54,28,12,5,.9,.1,0],g:1},{n:"Booster Or",p:2500,k:5,w:[30,39,20,8.5,2,.5,0],g:2},{n:"Booster Diamant",p:6000,k:5,w:[0,25,40,22,10,2.7,.3],g:3}];
+  const pick=(w,min)=>{let x=Math.random()*w.reduce((a,b)=>a+b),r=0;for(;r<w.length-1&&x>=w[r];r++)x-=w[r];r=Math.max(r,min);const L=D.filter(c=>c.r==r&&c.ab==null);return L[rnd(L.length)]};
+  let hand=[];const fbl=()=>{const w=fb+43200000-Date.now(),e=$("pb0");if(e)e.innerHTML="Booster Gratuit<br>"+(w>0?"⏳ "+fmt(w):"🎁 Prêt !")+" · 3 cartes"};setTimeout(fbl,0);const iv=setInterval(()=>$("pb0")?fbl():clearInterval(iv),30000);
+  window.openPack=i=>{const p=PK[i];if(p.free){const w=fb+43200000-Date.now();if(w>0)return toast("⏳ Prochain booster gratuit dans "+fmt(w));fb=Date.now();setTimeout(()=>{fbl();bdg()},0)}else{if(bal<p.p)return toast("Pas assez de jetons 😢");bal-=p.p}
+    hand=[...Array(p.k)].map((_,j)=>{const c=pick(p.w,j==p.k-1?p.g:0),nw=!cards[c.id];cards[c.id]=(cards[c.id]||0)+1;return{c,nw}});
+    save();$("pk").innerHTML=hand.map((h,j)=>`<div class="cd" onclick="flipC(${j},this)"><b>🎴</b></div>`).join("");$("m").textContent="Clique sur les cartes !"};
+  window.flipC=(j,e)=>{if(e.dataset.o)return;e.dataset.o=1;const{c,nw}=hand[j];e.className="cd f"+(c.r>=5?" h":"");e.style.setProperty("--rc",RC[c.r]);
+    e.innerHTML=`<span>${c.e}</span><em>${c.n}</em><small>${RN[c.r]}${nw?" · NEW":""}</small>`;if(c.r>=3)toast("✨ "+RN[c.r]+" : "+c.n+" !");if(!document.querySelector("#pk .cd:not(.f)"))rf()};
+  window.flipAll=()=>document.querySelectorAll("#pk .cd:not(.f)").forEach((e,j)=>setTimeout(()=>e.click(),j*250));
+  window.sellD=()=>{let g=0;D.forEach(c=>{const n=cards[c.id]||0;if(n>1){g+=(n-1)*SELL[c.r];cards[c.id]=1}});if(!g)return toast("Aucun doublon à vendre");bal+=g;save();toast("💰 Doublons vendus : +"+g+" 🪙");rf()};
+  const dist=()=>Object.keys(cards).length,hv=r=>D.some(c=>c.r>=r&&cards[c.id]),all=r=>D.filter(c=>c.r==r).every(c=>cards[c.id]);
+  const QS=[["10 cartes différentes",()=>dist()>=10,500],["20 cartes différentes",()=>dist()>=20,1500],["40 cartes différentes",()=>dist()>=40,5000],["Toutes les Communes",()=>all(0),2000],["Toutes les Rares",()=>all(1),3000],["Une carte Légendaire ou mieux",()=>hv(3),1000],["Une carte Secrète ou mieux",()=>hv(5),4000],["Une carte Divine",()=>hv(6),15000],["Collection complète",()=>dist()>=D.length,30000]];
+  const colH=()=>`<b>Collection ${dist()}/${D.length}</b><div class="cards" style="margin-top:8px">`+D.map(c=>cards[c.id]?`<div class="cd f mini${c.r>=5?" h":""}" style="--rc:${RC[c.r]}"><span>${c.e}</span><em>${c.n}</em><small>×${cards[c.id]}</small></div>`:`<div class="cd mini off"><b>❔</b></div>`).join("")+"</div>";
+  const qH=()=>QS.map((q,i)=>{const dn=qd.includes(i),ok=q[1]()&&!dn;return `<div class="sk"><span>${q[0]}</span><span>${q[2]} 🪙</span><button class="b${ok?" p":""}" ${ok?"":"disabled"} onclick="claimQ(${i})">${dn?"✅ Récupérée":ok?"Récupérer":"En cours"}</button></div>`}).join("");
+  const rf=()=>{$("colw").innerHTML=colH();$("qs").innerHTML=qH()};
+  window.claimQ=i=>{if(qd.includes(i)||!QS[i][1]())return;qd.push(i);bal+=QS[i][2];save();toast("🎯 Quête validée : +"+QS[i][2]+" 🪙");rf()};
+  return `<b>Boosters de cartes</b><br><small>Persos inspirés des archétypes d'anime (shonen, isekai, mecha, magical girl…). Plus le booster est cher, plus les cartes rares sortent.</small>
+  <div class="row">${PK.map((p,i)=>`<button class="b p" id="pb${i}" onclick="openPack(${i})">${p.n}<br>${p.p?p.p+" 🪙":"🎁"} · ${p.k} cartes</button>`).join("")}</div>
+  <div class="msg" id="m"></div><div class="cards" id="pk"></div>
+  <div class="row"><button class="b" onclick="flipAll()">Tout révéler</button><button class="b" onclick="sellD()">Vendre les doublons</button></div>
+  <div id="colw">${colH()}</div><b>🎯 Quêtes de collection</b><div id="qs">${qH()}</div>`}},
+tr:{n:"🔄 Échanges",init(){
+  setTimeout(rtr,0);
+  const mine=D.filter(c=>cards[c.id]).map(c=>`<option value="${c.id}">${c.e} ${c.n} (×${cards[c.id]})</option>`).join(""),all=D.map(c=>`<option value="${c.id}">${c.e} ${c.n} · ${RN[c.r]}</option>`).join("");
+  return DB?`<b>Échanges entre amis</b><br><small>Ta carte est mise en dépôt jusqu'à ce qu'un ami accepte (ou que tu annules).</small>
+  <div class="row">Je donne <select id="tg">${mine}</select></div><div class="row">Je veux <select id="tw">${all}</select></div>
+  <div class="row"><button class="b p" onclick="tradeNew()">Proposer l'échange</button></div><b>Offres ouvertes</b><div id="trl"></div>`:`<b>Échanges</b><br><small>Disponible uniquement en mode en ligne.</small>`}},
+sh:{n:"🎨 Skins",init(){
+  window.skBuy=k=>{const s=SK[k];if(own.includes(k))skin=k;else if(bal>=s.p){bal-=s.p;own.push(k);skin=k}else return toast("Pas assez de jetons 😢");applySkin();save();show("sh")};
+  return `<b>Boutique de skins</b><br><small>Change les couleurs, l'icône et les symboles des machines à sous / grattage.</small>`+Object.keys(SK).map(k=>{const s=SK[k],o=own.includes(k);
+    return `<div class="sk ${skin==k?"on":""}"><div class="sw">${s.c.map(c=>`<span style="background:${c}"></span>`).join("")}</div><b>${s.i} ${s.n}</b><span>${s.s.join(" ")}</span><button class="b ${o?"":"p"}" onclick="skBuy('${k}')">${skin==k?"✅ Équipé":o?"Équiper":s.p+" 🪙"}</button></div>`}).join("")}}
+};
+games.ad={n:"🛠️ Admin",init(){setTimeout(adL,0);return `<b>Panneau admin</b><br><small>Visible uniquement par le propriétaire. Montant négatif = retirer des jetons.</small><div class="row"><input id="au" placeholder="identifiant" style="width:140px"><input id="aa" type="number" placeholder="± jetons" style="width:120px"><button class="b p" onclick="adGive()">Envoyer</button></div><b>Comptes</b> <small>(clique pour choisir)</small><div id="al"></div>`}};
+games.mi={n:"⛏️ Mine",init(){
+  const O=[["🪨","Pierre",0,52],["🥉","Bronze",10,25],["🥈","Argent",25,12],["🥇","Or",60,6],["💎","Diamant",200,3.5],["🔴","Rubis",500,1.2],["🔮","Mythril",2000,.3]];let g=[],left=0,tot=0;
+  const roll=()=>{let x=Math.random()*100;for(const o of O){if(x<o[3])return o;x-=o[3]}return O[0]};
+  window.mStart=()=>{if(bal<300)return toast("Il faut 300 🪙 pour entrer");bal-=300;save();busy=true;g=[...Array(20)].map(roll);left=10;tot=0;$("mg").innerHTML=g.map((o,i)=>`<button onclick="mDig(${i},this)">⬛</button>`).join("");$("m").textContent="10 coups de pioche : creuse !";$("mb").disabled=true};
+  window.mDig=(i,e)=>{if(!left||e.classList.contains("o"))return;e.classList.add("o");const o=g[i];e.textContent=o[0];tot+=o[2];left--;$("m").textContent=o[1]+(o[2]?" +"+o[2]+" 🪙":"")+" — coups restants : "+left;if(!left){$("mb").disabled=false;pay("⛏️ Butin : "+tot+" 🪙 ("+(tot>=300?"+":"")+(tot-300)+")",tot)}};
+  return `<b>La Mine</b> <small>Entrée 300 🪙 = 10 coups de pioche sur 20 cases.</small><br><small>${O.slice(1).map(o=>o[0]+" "+o[1]+" = "+o[2]+" 🪙").join(" · ")}</small>
+  <div class="mg" id="mg">${"<button disabled>⬛</button>".repeat(20)}</div><div class="msg" id="m" style="text-align:center"></div><button class="b p" id="mb" onclick="mStart()">⛏️ Entrer (300 🪙)</button>`}};
+games.bt={n:"⚔️ Combat",init(){BT=[];const have=D.filter(c=>cards[c.id]);
+  window.bPick=(id,e)=>{const i=BT.indexOf(id);if(i>=0){BT.splice(i,1);e.classList.remove("sel")}else if(BT.length<3){BT.push(id);e.classList.add("sel")}$("bsel").textContent="Équipe : "+BT.length+"/3"};
+  window.bGo=()=>{if(BT.length!=3)return toast("Choisis 3 cartes");const m=+$("bd").value,rm=Math.max(...BT.map(i=>D[i].r));
+    BS={T:syn(BT.map(i=>mkF(D[i],1))),E:[0,1,2].map(()=>{const L=D.filter(c=>c.r<=Math.min(6,rm+(m>1?1:0))&&c.r>=Math.max(0,rm-2));return mkF(L[rnd(L.length)],m)}),cd:0,ecd:0,log:["Le combat commence !"+(window.SYNT||"")],rew:m<1?150:m>1?1000:400,over:0};
+    busy=true;$("bpick").style.display="none";$("bset").style.display="none";bRender()};
+  window.bAct=k=>{const B=BS;if(B.over)return;const a=B.T.find(x=>x.hp>0),e=B.E.find(x=>x.hp>0),L=t=>B.log.push(t);
+    if(k=="s"){if(B.cd)return;B.cd=3}else if(B.cd)B.cd--;go(a,e,k,L);
+    if(e.hp>0){const k2=(!B.ecd&&Math.random()<.4)?"s":"a";if(k2=="s")B.ecd=3;else if(B.ecd)B.ecd--;go(e,a,k2,L)}
+    [a,e].forEach(x=>{if(x.po>0&&x.hp>0){const d=Math.round(x.max*.07);x.hp=Math.max(0,x.hp-d);x.po--;L(x.c.n+" ☠️ −"+d)}});
+    if(!B.T.some(x=>x.hp>0)){B.over=-1;L("💀 Défaite...")}else if(!B.E.some(x=>x.hp>0)){B.over=1;L("🏆 Victoire ! +"+B.rew+" 🪙");bal+=B.rew;save()}bRender()};
+  window.bEnd=()=>{busy=false;BS=null;show("bt")};
+  if(have.length<3)return `<b>Combat de cartes</b><br><small>Il te faut au moins 3 cartes différentes (tu en as ${have.length}). Ouvre des boosters !</small>`;
+  return `<b>Combat contre l'IA</b><br><small>Choisis 3 cartes : PV, attaque et capacité (Soin, Garde, Frappe Double, Poison) dépendent de la carte et de sa rareté. Capacité : recharge 3 tours.</small>
+  <div id="bset"><div class="row">Difficulté <select id="bd"><option value="0.8">Facile (+150 🪙)</option><option value="1" selected>Normal (+400 🪙)</option><option value="1.3">Difficile (+1000 🪙)</option></select></div>
+  <div class="row"><span id="bsel">Équipe : 0/3</span><button class="b p" onclick="bGo()">Lancer le combat</button></div></div>
+  <div class="cards" id="bpick">${have.map(c=>{const s=cst(c);return `<div class="cd f mini" style="--rc:${RC[c.r]}" onclick="bPick(${c.id},this)"><span>${c.e}</span><em>${c.n}</em><small>❤️${s.hp} ⚔️${s.atk}<br>✨${AB[s.sp]}</small></div>`}).join("")}</div><div id="bf"></div>`}};
+const CMP={lyra:{id:901,r:2,e:"🏹",n:"Lyra",ab:6},brok:{id:902,r:2,e:"🛡️",n:"Brok",ab:8}},HERO={id:900,r:1,e:"🧑",n:"Toi",ab:2};
+let STY={n:"s0",f:{},c:[]},SCH=[];
+const stLoad=()=>{let s=null;try{s=JSON.parse(localStorage.getItem("cstory_"+me))}catch(e){}STY=s||{n:"s0",f:{},c:[]};if(!STY.sd)STY.sd=1+Math.floor(Math.random()*1e6)},stSave=()=>{try{localStorage.setItem("cstory_"+me,JSON.stringify(STY))}catch(e){}};
+const stTeam=()=>[HERO,...[...STY.c.map(k=>CMP[k]),...D.filter(c=>cards[c.id])].sort((a,b)=>b.r-a.r).slice(0,2)];
+function stFx(x){(x||"").split(",").forEach(p=>{if(!p)return;if(p=="x"){STY.f={};STY.c=[]}else if(p.slice(0,2)=="xp"){STY.xp=(STY.xp||0)+ +p.slice(2);toast("✨ +"+p.slice(2)+" XP")}else if(p[0]=="g"){const v=+p.slice(1);bal+=v;save();toast((v>0?"+":"")+v+" 🪙")}else if(p[0]=="f")STY.f[p.slice(1)]=1;else if(p[0]=="c"&&!STY.c.includes(p.slice(1))){STY.c.push(p.slice(1));toast("🤝 "+CMP[p.slice(1)].n+" te rejoint !")}})}
+const stOk=q=>!q||q.split("&").every(t=>t[0]=="$"?bal>=+t.slice(1):t[0]=="!"?!STY.f[t.slice(1)]:!!STY.f[t]);
+const STN={
+s0:["Tu te réveilles au son des cloches de Kiri. Le ciel est rouge, la terre tremble : la montagne s'est fissurée et un rugissement en sort. <i>Vorath le dragon</i> s'éveille après mille ans. Les villageois courent dans tous les sens, et tu sens que tout repose sur toi.",[["Rejoindre la place du village","hub"]]],
+hub:["La place de Kiri est un chaos. L'auberge, la forge et la maison du vieux sage tiennent encore debout. Au nord, le sentier mène à la Forêt Brumeuse et à la montagne.",[["🍺 Auberge","s1"],["🔨 Forge","s2"],["🧙 Maison du sage","s3"],["🌲 Partir vers la forêt","f1"]]],
+s1:["À l'auberge, une archère aux yeux d'ambre nettoie ses flèches. « Je m'appelle Lyra. Je connais les chemins de la montagne… pour 50 pièces, je suis à toi. »",[["Engager Lyra (−50 🪙)","s1b","g-50,clyra,flyra","!flyra&$50"],["Offrir un verre et écouter les rumeurs","s1c","frum","!frum"],["Retour","hub"]]],
+s1b:["Lyra sourit en rangeant ses flèches. « Marché conclu. Je te couvre de loin. »",[["Retour à la place","hub"]]],
+s1c:["Un chasseur murmure : « Les loups de la forêt sont devenus fous. Mais il existe un vieux tunnel de mineurs qui évite le sentier. »",[["Retour","hub"]]],
+s2:["La forge est en flammes. Un nain massif, Brok, tient son marteau face à deux pillards. « Un coup de main, l'humain ? »",[["⚔️ L'aider","s2f",null,"!fbrok"],["Retour","hub"]]],
+s2f:["Les pillards se jettent sur vous !",null,{en:[["🗡️","Pillard",0,.9],["🗡️","Pillard",0,.9]],win:"s2w",rew:120},"Combat"],
+s2w:["Brok essuie son marteau. « Tu as du cran. Je viens avec toi, et ma forge sera à toi après cette histoire de dragon. »",[["Retour à la place","hub","cbrok,fbrok"]]],
+s3:["Le vieux sage lit dans les cendres. « Vorath n'est pas un monstre : il est furieux, on lui a volé son œuf. Rends-le-lui et la guerre n'aura pas lieu. Prends cette amulette : elle te fera comprendre sa langue. Cherche l'œuf au sanctuaire oublié. »",[["Prendre l'amulette (+100 🪙 de talismans)","hub","g100,fsage","!fsage"],["Retour","hub"]]],
+f1:["La Forêt Brumeuse avale la lumière. Des yeux jaunes brillent entre les troncs. Deux chemins : le sentier, direct mais gardé, ou le vieux tunnel de mineurs.",[["Suivre le sentier","f2"],["Prendre le tunnel secret","f3",null,"frum"],["Retourner au village","hub"]]],
+f2:["Une meute de loups enragés surgit du brouillard !",null,{en:[["🐺","Loup enragé",1,.9],["🐺","Loup enragé",1,.9],["🐺","Loup alpha",1,1.2]],win:"f4",rew:200},"Combat"],
+f3:["Dans le tunnel, tu évites les loups et trouves un coffre de mineur oublié.",[["Ouvrir le coffre (+150 🪙)","f4","g150,ftun","!ftun"],["Continuer","f4"]]],
+f4:["Une clairière. Au centre, un sanctuaire en ruine où brille un œuf de cristal, gardé par un spectre.",[["⚔️ Affronter le spectre","f4f",null,"!fegg"],["Monter vers la tanière du dragon","f6",null,"fegg"],["Retourner au village","hub"]]],
+f4f:["Le spectre hurle et se jette sur vous.",null,{en:[["👻","Spectre gardien",2,1],["💀","Âme errante",1,.9]],win:"f5",rew:300},"Combat"],
+f5:["Le spectre se dissipe. L'œuf de cristal palpite doucement dans tes mains. Tu le prends.",[["Monter vers la tanière du dragon","f6","fegg"]]],
+f6:["La tanière est un océan de braises. Vorath déploie ses ailes et sa voix résonne comme un orage : « Qui ose ? »",[["🥚 Lui tendre l'œuf et lui parler","e1",null,"fegg&fsage"],["⚔️ Attaquer de front !","bf"],["Fuir vers le village","hub"]]],
+c1:["Trois jours ont passé. Un mal étrange court dans Kiri : des villageois se couvrent d'une marque noire au front, le regard vide, et marchent vers le sud sans un mot. Au loin, la cité de Mornelune brûle d'une lueur violette.",[["🔍 Examiner un villageois marqué","c2",null,"!fclue"],["🔨 Demander conseil à Brok","c3",null,"cbrok&!fmap"],["🏹 Écouter Lyra","c3b",null,"clyra&!flk"],["🛤️ Prendre la route de Mornelune","c4"]]],
+c2:["Un villageois se retourne d'un coup, les yeux noirs : « Elle vous attend… » Il t'attaque !",null,{en:[["🌑","Villageois possédé",1,1],["🌑","Ombre rampante",1,1]],win:"c2w",rew:200},"Combat"],
+c2w:["Quand l'ombre s'éteint, le villageois murmure : « Maelis… la Tour de Mornelune… » Puis il s'évanouit, libéré.",[["Retour","c1","fclue"]]],
+c3:["Brok gratte sa barbe. « Cette marque, je l'ai déjà vue sur de vieux marteaux. C'est de la magie d'ombre : elle ne tient que grâce à un cristal noir, tout en haut d'une tour. Brise-le et tout s'arrête. » Il te glisse une bourse (+80 🪙).",[["Merci Brok","c1","fmap,g80"]]],
+c3b:["Lyra murmure : « Les gardes de Mornelune sont marqués aussi. Mais je connais une entrée par les égouts. »",[["Noté","c1","flk"]]],
+c4:["La route est coupée par des brigands marqués qui exigent un péage.",[["Payer 100 🪙","c5","g-100","$100"],["⚔️ Les affronter","c4f"]]],
+c4f:["Les brigands dégainent !",null,{en:[["🗡️","Brigand marqué",1,1],["🗡️","Brigand marqué",1,1],["🏴","Chef brigand",2,.9]],win:"c5",rew:250},"Combat"],
+c5:["Les remparts de Mornelune se dressent, gardés par des soldats au front noir. La grande porte est fermée.",[["🏹 Passer par les égouts avec Lyra","c6",null,"flk"],["⚔️ Forcer la porte","c5f"]]],
+c5f:["Les gardes se mettent en rang !",null,{en:[["🛡️","Garde marqué",2,.9],["🛡️","Garde marqué",2,.9]],win:"c6",rew:300},"Combat"],
+c6:["Dans la cité, une bibliothèque abandonnée. Un journal dévoile la vérité : Maelis, ancienne apprentie du sage, avait volé l'œuf de Vorath pour réveiller le dragon et sauver sa ville d'une peste. Mais l'ombre l'a corrompue. (+100 🪙)",[["Lire jusqu'au bout","c7","g100,fjournal","!fjournal"],["Monter à la tour","c7","","fjournal"]]],
+c7:["Dans l'escalier de la tour, deux chevaliers d'ombre bloquent le palier.",null,{en:[["⚫","Chevalier d'ombre",2,1],["⚫","Chevalier d'ombre",2,1]],win:"c8",rew:400},"Combat"],
+c8:["Au sommet, Maelis flotte devant un cristal noir qui pulse. « Tu viens me tuer, comme les autres ? » Ses yeux hésitent.",[["💬 Lui parler du journal et de l'œuf","e3",null,"fjournal&fclue"],["⚔️ Briser le cristal par la force","bm"]]],
+bm:["Maelis hurle, le cristal explose en éclats noirs !",null,{en:[["🔮","Maelis, l'Ombre",4,.9],["🌑","Écho d'ombre",1,1]],win:"e4",rew:800},"BOSS"],
+e3:["Maelis tombe à genoux. « Je voulais juste sauver ma ville… » Ensemble, vous brisez le cristal sans violence. Les marques s'effacent et Kiri retrouve ses villageois. Maelis rejoint le sage pour réparer ses erreurs. À suivre : Chapitre 3…",[["➡️ Chapitre 3","G3A","g500"],["Rejouer l'histoire (+1500 🪙)","s0","g1500,x"]],null,"FIN 3 — L'Apprentie Rachetée"],
+e4:["Le cristal vole en éclats, les marques disparaissent. Maelis s'écroule, vaincue, et murmure : « Ce n'était qu'un début… » Une porte noire s'ouvre dans le ciel. À suivre : Chapitre 3…",[["➡️ Chapitre 3","G3A","g300"],["Rejouer l'histoire (+1200 🪙)","s0","g1200,x"]],null,"FIN 4 — La Marque Brisée"],
+e1:["Vorath renifle l'œuf, son regard s'adoucit. « Humain… tu aurais pu me tuer. » Il s'envole, apaisé, et la terre cesse de trembler. Kiri est sauvé sans une goutte de sang. Le dragon te laisse une écaille dorée.",[["➡️ Chapitre 2","c1","g500"],["Rejouer l'histoire (+1000 🪙)","s0","g1000,x"]],null,"FIN 1 — Le Pacte du Dragon"],
+bf:["Vorath rugit et crache un torrent de flammes !",null,{en:[["🐉","Vorath le Dragon",3,1.1]],win:"e2",rew:500},"BOSS"],
+e2:["Vorath s'effondre dans un grondement. Les villageois te portent en triomphe. Au loin, une silhouette encapuchonnée t'observe, une marque noire sur le front : une autre menace se prépare. À suivre : Chapitre 2…",[["➡️ Chapitre 2","c1","g300"],["Rejouer l'histoire (+800 🪙)","s0","g800,x"]],null,"FIN 2 — Tueur de Dragon"]};
+Object.assign(CMP,{mira:{id:903,r:3,e:"🔮",n:"Mira",ab:6},dorn:{id:904,r:3,e:"⚜️",n:"Dorn",ab:7},sylve:{id:905,r:3,e:"🗡️",n:"Sylve",ab:3},zeph:{id:906,r:4,e:"🌪️",n:"Zéphyr",ab:5}});
+const lvl=()=>Math.floor(Math.sqrt((STY.xp||0)/40)),nd=k=>k[0]=="G"?gen(k):(STN[k]||STN.s0),REC={5:"mira",12:"dorn",22:"sylve",35:"zeph"};
+const ACT=[["Les Terres Brûlées","des Terres Brûlées","🌋","Golem de lave","🔥","Spectre de braise","Ignarr, Seigneur des Cendres"],["La Forêt Murmurante","de la Forêt Murmurante","🌳","Tréant corrompu","🍃","Esprit sylvestre","Sylvara, Reine des Racines"],["Les Îles Englouties","des Îles Englouties","🏴‍☠️","Pirate fantôme","🐙","Kraken mineur","Capitaine Abysse"],["La Cité Mécanique","de la Cité Mécanique","🤖","Automate rouillé","🛸","Drone sentinelle","L'Architecte"],["Les Pics de Glace","des Pics de Glace","🦣","Yéti","🐺","Loup des neiges","Impératrice Givre"],["Le Désert d'Os","du Désert d'Os","🧟","Momie","🦂","Scorpion géant","Le Pharaon Maudit"],["L'Académie Interdite","de l'Académie Interdite","📕","Livre vivant","🧪","Apprenti fou","Archimage Zorn"],["Le Royaume des Rêves","du Royaume des Rêves","😈","Cauchemar","🎭","Marchand de songes","Morphée le Noir"],["Les Failles Célestes","des Failles Célestes","😇","Ange déchu","⭐","Gardien d'étoiles","Séraphin Brisé"],["Le Trône du Néant","du Trône du Néant","🕳️","Ombre du vide","⚫","Chevalier du néant","Le Roi Sans Nom"]];
+const EV=[["Un pont en ruine barre la route près de {L}. Des créatures guettent de l'autre côté.","⚔️ Charger","🧠 Chercher un autre passage","💰 Payer un passeur"],["Un marchand affolé te supplie : sa caravane est attaquée près de {L} !","⚔️ Défendre la caravane","🗣️ Détourner les monstres","💰 Racheter leur départ"],["Un temple ancien s'ouvre devant {L}, gardé par ses défenseurs.","⚔️ Forcer l'entrée","🔓 Crocheter la serrure","💰 Soudoyer le gardien"],["La nuit tombe sur {L}. Des bruits étranges approchent du camp.","⚔️ Tendre une embuscade","🔥 Faire diversion","💰 Payer une escorte"],["Un enfant te propose un raccourci par {L}… trop beau pour être vrai.","⚔️ Suivre en restant prêt","🧠 Le piéger en retour","💰 Lui offrir des bonbons"],["Un champion local te défie à {L} pour l'honneur.","⚔️ Accepter","🎭 Le provoquer pour qu'il se trompe","💰 Parier sur toi"]];
+const rg=k=>{const x=Math.sin(k*9301+(STY.sd||1)*49297)*233280;return x-Math.floor(x)};
+function gen(key){const ch=+key.slice(1,-1),t=key.slice(-1),a=Math.floor((ch-3)/10),A=ACT[a%10],i=(ch-3)%10+1,
+ T="Acte "+(a+2)+" — "+A[0]+" · Chapitre "+ch,L=["les ruines","la vallée","la citadelle","un camp abandonné","les galeries"][Math.floor(rg(ch)*5)]+" "+A[1],
+ ev=EV[Math.floor(rg(ch+7)*EV.length)],r=Math.min(5,Math.floor((ch-3)/18)+1),m=.85+Math.min(1,ch*.01),n=ch<12?2:3,boss=i==5||i==10,
+ en=k=>{const q=[];for(let j=0;j<n+k;j++)q.push(j%2?[A[4],A[5],r,m]:[A[2],A[3],r,m]);return q},
+ rew=60+ch*12,K="G"+ch,nx="G"+(ch+1)+"A",cost=30+ch*6;
+ if(t=="A")return boss?[i==10?"Au cœur "+A[1]+", <b>"+A[6]+"</b> t'attend. C'est l'épreuve finale de l'acte.":"Le champion "+A[1]+" te barre la route.",[["⚔️ Combattre",K+"F"]],null,T]:[ev[0].replace("{L}",L),[[ev[1],K+"F"],[ev[2],K+"R"],[ev[3]+" (−"+cost+" 🪙)",K+"W","g-"+cost,"$"+cost]],null,T];
+ if(t=="F")return[boss?"Le combat est inévitable !":"Tu n'as pas le choix : il faut se battre !",null,{en:boss?[["👹",i==10?A[6]:"Champion "+A[1],Math.min(6,r+1),m],[A[2],A[3],r,m]]:en(0),win:K+"W",rew:boss?rew*3:rew},T];
+ if(t=="R"){if(rg(ch+3)<.6){const g=Math.round(rew*.8);return["Ta ruse fonctionne à merveille ! Les adversaires battent en retraite et tu récupères leur butin (+"+g+" 🪙).",[["Continuer",K+"W","g"+g]],null,T]}
+  return["Ça tourne mal : ta ruse est découverte et des renforts arrivent !",null,{en:en(1),win:K+"W",rew:Math.round(rew*1.2)},T]}
+ const rc=REC[ch]&&!STY.c.includes(REC[ch])?REC[ch]:"",xp=30+ch*3+(i==10?100:0);
+ if(ch==102)return["Le Roi Sans Nom s'efface dans un dernier murmure. Le Grand Voyage s'achève : le monde est sauvé, et ton nom sera chanté pendant mille ans. (+10 000 🪙)",[["♾️ Continuer en mode infini",nx,"g10000,xp500"],["Rejouer depuis le début","s0","x"]],null,"FIN — Le Grand Voyage"];
+ return["Chapitre terminé !"+(i==10?" <b>L'acte est accompli</b> (+"+(400+ch*8)+" 🪙).":"")+(rc?" 🤝 "+CMP[rc].n+" rejoint ton équipe !":"")+" Tu gagnes de l'expérience.",[["➡️ Chapitre "+(ch+1),nx,"xp"+xp+(i==10?",g"+(400+ch*8):"")+(rc?",c"+rc:"")]],null,T]}
+games.st={n:"📖 Histoire",init(){stLoad();
+  window.bAct=k=>{const B=BS;if(B.over)return;const a=B.T.find(x=>x.hp>0),e=B.E.find(x=>x.hp>0),L=t=>B.log.push(t);
+    if(k=="s"){if(B.cd)return;B.cd=3}else if(B.cd)B.cd--;go(a,e,k,L);
+    if(e.hp>0){const k2=(!B.ecd&&Math.random()<.4)?"s":"a";if(k2=="s")B.ecd=3;else if(B.ecd)B.ecd--;go(e,a,k2,L)}
+    [a,e].forEach(x=>{if(x.po>0&&x.hp>0){const d=Math.round(x.max*.07);x.hp=Math.max(0,x.hp-d);x.po--;L(x.c.n+" ☠️ −"+d)}});
+    if(!B.T.some(x=>x.hp>0)){B.over=-1;L("💀 Défaite...")}else if(!B.E.some(x=>x.hp>0)){B.over=1;L("🏆 Victoire ! +"+B.rew+" 🪙");bal+=B.rew;save()}bRender()};
+  window.bEnd=()=>{const w=BS.over==1;busy=false;BS=null;if(w){STY.n=nd(STY.n)[2].win;stSave()}else toast("💀 Défaite… réessaie !");stShow()};
+  window.stGo=i=>{const c=SCH[i];stFx(c[2]);STY.n=c[1];stSave();stShow()};
+  window.stFight=()=>{const F=nd(STY.n)[2];BS={T:syn(stTeam().map(c=>{const f=mkF(c,1+lvl()*.05);f.hp=f.max=Math.round(f.hp*(1+itB(3)));f.atk=Math.round(f.atk*(1+itB(4)));return f})),E:F.en.map((x,i)=>mkF({id:950+i,r:x[2],e:x[0],n:x[1],ab:null},x[3])),cd:0,ecd:0,log:["Le combat commence !"+(window.SYNT||"")],rew:F.rew||0,over:0};busy=true;$("sch").style.display="none";bRender()};
+  setTimeout(stShow,0);return `<div id="sv"></div>`}};
+function stShow(){const e=$("sv");if(!e)return;const N=nd(STY.n);SCH=(N[1]||[]).filter(c=>stOk(c[3]));
+  e.innerHTML=`<b>📖 ${N[3]||(STY.n[0]=="c"?"Chapitre 2 — La Marque Noire":"Chapitre 1 — Les Cendres de Kiri")}</b><p style="line-height:1.6">${N[0]}</p><div id="bf"></div><div class="row" id="sch">`+(N[2]?`<button class="b p" onclick="stFight()">⚔️ Combattre</button>`:SCH.map((c,i)=>`<button class="b" onclick="stGo(${i})">${c[0]}</button>`).join(""))+`</div><small class="mu">Niv ${lvl()} · Équipe : ${stTeam().map(c=>c.e+" "+c.n).join(" · ")}</small>`}
+const ITM=[["Épée de fer","🗡️",800,0,.1],["Armure de cuir","🛡️",800,.1,0],["Amulette de vie","📿",3000,.2,0],["Lame runique","⚔️",5000,0,.25],["Heaume du Néant","👑",30000,.3,.3]];
+const stIt=()=>{try{return JSON.parse(localStorage.getItem("cinv_"+me))||[]}catch(e){return[]}},itB=i=>stIt().reduce((s,k)=>s+ITM[k][i],0);
+games.bq={n:"🛒 Boutique",init(){window.bqBuy=i=>{const v=stIt();if(v.includes(i)||bal<ITM[i][2])return toast("Pas assez de jetons");bal-=ITM[i][2];v.push(i);try{localStorage.setItem("cinv_"+me,JSON.stringify(v))}catch(e){}save();toast("✅ "+ITM[i][0]);show("bq")};
+ return `<b>🛒 Boutique d'équipement</b><br><small>Les objets renforcent toute ton équipe dans l'Histoire et contre le Boss mondial. Bonus actuel : ❤️ +${Math.round(itB(3)*100)}% · ⚔️ +${Math.round(itB(4)*100)}%</small>`+ITM.map((x,i)=>`<div class="sk"><span>${x[1]} <b>${x[0]}</b> — ❤️ +${x[3]*100}% ⚔️ +${x[4]*100}%</span>${stIt().includes(i)?"<small>Possédé ✔</small>":`<button class="b p" ${bal<x[2]?"disabled":""} onclick="bqBuy(${i})">${x[2].toLocaleString("fr")} 🪙</button>`}</div>`).join("")}};
+const WK=Math.floor(Date.now()/6048e5),WB=["🐲 Dragon des Abysses","🗿 Titan de Pierre","👁️ Œil du Chaos","🧌 Roi des Ogres"][WK%4],WHP=120000;
+games.wb={n:"🌍 Boss mondial",init(){if(!DB||me=="invite")return `<b>🌍 Boss mondial</b><br><small>Disponible uniquement dans la version en ligne, avec un compte.</small>`;
+ window.wbHit=async()=>{const day=new Date().toISOString().slice(0,10),k="wbA_"+me+"_"+day,n=+(localStorage.getItem(k)||0);if(n>=3)return toast("3 attaques par jour maximum");const ref=DB.collection("world").doc("w"+WK);
+  try{const a=await ref.acquire({holder:me,ttlMs:8000});if(!a.acquired)return toast("Réessaie dans un instant");const x=await ref.get(),d=x.exists?x.data():{hp:WHP,dm:{}};d.dm=d.dm||{};if(d.hp<=0)return toast("Déjà vaincu !");
+   const dmg=Math.round(stTeam().reduce((s,c)=>s+cst(c).atk,0)*(1+lvl()*.05)*(1+itB(4))*(15+rnd(10)));d.hp=Math.max(0,d.hp-dmg);d.dm[me]=(d.dm[me]||0)+dmg;await ref.set(d);localStorage.setItem(k,n+1);toast("💥 −"+dmg.toLocaleString("fr")+" PV !");wbShow()}catch(e){toast("Erreur réseau")}};
+ window.wbClaim=r=>{bal+=r;save();try{localStorage.setItem("wbC_"+me+"_"+WK,1)}catch(e){}toast("🎁 +"+r.toLocaleString("fr")+" 🪙");wbShow()};
+ setTimeout(wbShow,0);return `<div id="wb">Chargement…</div>`}};
+async function wbShow(){const e=$("wb");if(!e)return;let d={hp:WHP,dm:{}};try{const x=await DB.collection("world").doc("w"+WK).get();if(x.exists)d=x.data()}catch(err){}
+ d.dm=d.dm||{};const my=d.dm[me]||0,n=+(localStorage.getItem("wbA_"+me+"_"+new Date().toISOString().slice(0,10))||0),top=Object.entries(d.dm).sort((a,b)=>b[1]-a[1]).slice(0,5),got=localStorage.getItem("wbC_"+me+"_"+WK),r=5000+Math.min(30000,Math.floor(my/4));
+ e.innerHTML=`<b>🌍 Boss de la semaine : ${WB}</b><div style="background:#0006;height:16px;margin:8px 0"><div style="width:${100*d.hp/WHP}%;height:16px;background:var(--rd)"></div></div><div>${d.hp.toLocaleString("fr")} / ${WHP.toLocaleString("fr")} PV · tes dégâts : ${my.toLocaleString("fr")}</div>
+ <div class="row">${d.hp<=0?(my&&!got?`<button class="b p" onclick="wbClaim(${r})">🎁 Récupérer ${r.toLocaleString("fr")} 🪙</button>`:"<b>🏆 Boss vaincu ! Reviens lundi.</b>"):`<button class="b p" ${n>=3?"disabled":""} onclick="wbHit()">⚔️ Attaquer (${3-n}/3 aujourd'hui)</button>`}</div><b>Meilleurs :</b><ol>${top.map(t=>`<li>${t[0]} — ${t[1].toLocaleString("fr")}</li>`).join("")||"<li class='mu'>Personne encore</li>"}</ol><small class="mu">Tout le monde l'attaque ensemble. Récompense à sa mort selon tes dégâts. Un nouveau boss chaque semaine.</small>`}
+const ACH=[["💰 Atteindre 10 000 🪙",()=>bal>=1e4,500],["🏦 Atteindre 1 000 000 🪙",()=>bal>=1e6,20000],["🎴 20 cartes différentes",()=>Object.keys(cards).length>=20,2000],["🎴 50 cartes différentes",()=>Object.keys(cards).length>=50,10000],["📖 Niveau 5 (Histoire)",()=>lvl()>=5,1500],["📖 Niveau 15 (Histoire)",()=>lvl()>=15,8000],["🛒 Posséder 3 objets",()=>stIt().length>=3,3000],["🔥 Série de 7 jours",()=>stk().n>=7,2000]];
+const stk=()=>{try{return JSON.parse(localStorage.getItem("cstk_"+me))||{n:0}}catch(e){return{n:0}}},acl=()=>{try{return JSON.parse(localStorage.getItem("cach_"+me))||[]}catch(e){return[]}};
+games.ac={n:"🏅 Succès",init(){window.acGet=i=>{const c=acl();if(c.includes(i)||!ACH[i][1]())return;c.push(i);try{localStorage.setItem("cach_"+me,JSON.stringify(c))}catch(e){}bal+=ACH[i][2];save();toast("🏅 +"+ACH[i][2]+" 🪙");show("ac")};
+ window.codeGo=()=>{const v=($("cdi").value||"").trim().toUpperCase(),C={KIRI:500,VORATH:1000,GACHA:1500,OTAKU2026:2000,MORNELUNE:2500};let u=[];try{u=JSON.parse(localStorage.getItem("ccode_"+me))||[]}catch(e){}if(!C[v])return toast("Code invalide");if(u.includes(v))return toast("Code déjà utilisé");u.push(v);try{localStorage.setItem("ccode_"+me,JSON.stringify(u))}catch(e){}bal+=C[v];save();toast("🎁 Code secret : +"+C[v]+" 🪙")};
+ return `<div class="row"><input id="cdi" placeholder="Code secret" style="width:170px"><button class="b" onclick="codeGo()">OK</button></div><b>🏅 Succès</b> <small>(série actuelle : ${stk().n} jour(s) 🔥)</small>`+ACH.map((a,i)=>{const ok=a[1](),dn=acl().includes(i);return `<div class="sk"><span>${a[0]}</span>${dn?"<small>Réclamé ✔</small>":`<button class="b ${ok?"p":""}" ${ok?"":"disabled"} onclick="acGet(${i})">+${a[2].toLocaleString("fr")} 🪙</button>`}</div>`}).join("")}};
+games.cr={n:"🚀 Crash",init(){let iv,m=1,cp,b;
+ window.crGo=()=>{b=bet();if(!b)return($("m").textContent="Mise invalide");busy=true;bal-=b;save();cp=Math.min(500,Math.max(1,.97/(1-Math.random())));m=1;$("cg").disabled=1;$("cc").disabled=0;$("m").textContent="";
+  iv=setInterval(()=>{m=+(m*1.03).toFixed(2);if(m>=cp){clearInterval(iv);$("cc").disabled=1;$("cg").disabled=0;$("cm").textContent="💥 x"+cp.toFixed(2);pay("Crash ! −"+b,0)}else $("cm").textContent="x"+m.toFixed(2)},120)};
+ window.crOut=()=>{clearInterval(iv);$("cc").disabled=1;$("cg").disabled=0;const w=Math.floor(b*m);pay("Encaissé à x"+m.toFixed(2)+" ! +"+(w-b),w)};
+ return `${betUI()}<div class="big" id="cm">x1.00</div><div class="msg" id="m" style="text-align:center"></div><div class="row"><button class="b p" id="cg" onclick="crGo()">🚀 Décoller</button><button class="b" id="cc" onclick="crOut()" disabled>💰 Encaisser</button></div><small>La fusée monte… encaisse avant le crash !</small>`}};
+function fiveFx(c){const o=document.createElement("div");o.className="fx";o.innerHTML=Array.from({length:18},()=>`<i class="sp" style="left:${rnd(100)}%;animation-delay:${rnd(12)/10}s">✨</i>`).join("")+`<div class="rays"></div><div class="fcx"><div style="font-size:96px">${c.e}</div><b>${c.n}</b><div style="color:#ffd700;font-size:30px;letter-spacing:6px">★★★★★</div></div>`;o.onclick=()=>o.remove();document.body.appendChild(o);setTimeout(()=>o.remove(),2300)}
+games.ck={n:"🖱️ Clicker",init(){const K="cck_"+me,D0=()=>new Date().toISOString().slice(0,10);let S=null;try{S=JSON.parse(localStorage.getItem(K))}catch(e){}S=S||{};if(S.d!=D0()){S.d=D0();S.e=0}S.p=S.p||1;S.a=S.a||0;
+ const sv=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}},ui=()=>{const e=$("ckm");if(!e)return;e.textContent=S.e+" / 500 🪙 aujourd'hui";$("ckp").textContent="Clic +"+S.p+" · Auto "+S.a+"/s";$("ckb1").textContent="Clic +1 ("+S.p*150+" 🪙)";$("ckb2").textContent="Auto-clic +1/s ("+(S.a+1)*300+" 🪙)"},
+ add=n=>{const g=Math.min(n,500-S.e);if(g<=0)return;S.e+=g;bal+=g;sv();save();ui()};
+ window.ckC=()=>{if(S.e>=500)return toast("Limite de 500 🪙 atteinte, reviens demain !");add(S.p)};
+ window.ckU=k=>{const c=k?(S.a+1)*300:S.p*150;if(bal<c)return toast("Pas assez de jetons");bal-=c;if(k)S.a++;else S.p++;sv();save();ui()};
+ const iv=setInterval(()=>{if(!$("ckm"))return clearInterval(iv);if(S.a)add(S.a)},1000);setTimeout(ui,0);
+ return `<b>🖱️ Clicker</b><br><small>Clique pour gagner des jetons : maximum 500 🪙 par jour. Les améliorations te font simplement remplir la limite plus vite.</small><div class="msg" id="ckm"></div><div class="row" style="justify-content:center"><button class="b p" style="font-size:34px;padding:22px 40px" onclick="ckC()">🪙 CLIC</button></div><div class="msg" id="ckp" style="text-align:center"></div><div class="row" style="justify-content:center"><button class="b" id="ckb1" onclick="ckU(0)"></button><button class="b" id="ckb2" onclick="ckU(1)"></button></div>`}};
+games.pl={n:"🔻 Plinko",init(){const M=[8,3,1.2,.5,.3,.5,1.2,3,8];
+ window.plGo=()=>{const b=bet();if(!b)return($("m").textContent="Mise invalide");busy=true;bal-=b;save();$("m").textContent="";let x=4,r=0;const ball=$("pb");ball.style.display="block";
+  const iv=setInterval(()=>{x+=Math.random()<.5?-.5:.5;r++;ball.style.left=(x/8*92+4)+"%";ball.style.top=(r*11)+"%";if(r>=8){clearInterval(iv);const k=Math.round(x),w=Math.floor(b*M[k]);document.querySelectorAll(".pls").forEach((e,i)=>e.style.outline=i==k?"2px solid var(--tx)":"");pay("x"+M[k]+(w>b?" ! +":" : ")+(w-b),w)}},350)};
+ return `${betUI()}<div style="position:relative;height:170px;margin:10px 0;border:1px solid var(--ln)"><span id="pb" style="display:none;position:absolute;font-size:22px;transform:translateX(-50%);transition:all .3s;left:50%;top:0">🔴</span></div><div class="row" style="justify-content:center;gap:3px">${M.map(v=>`<span class="pls" style="border:1px solid var(--ln);padding:4px 6px">x${v}</span>`).join("")}</div><div class="msg" id="m" style="text-align:center"></div><div class="row" style="justify-content:center"><button class="b p" onclick="plGo()">🔻 Lâcher la bille</button></div>`}};
+games.hr={n:"🐎 Courses",init(){const H=[["🐎","Éclair",.4],["🏇","Tonnerre",.28],["🦄","Licorne",.18],["🐴","Poney",.1],["🦓","Zèbre",.04]];
+ window.hrGo=i=>{const b=bet();if(!b)return($("m").textContent="Mise invalide");busy=true;bal-=b;save();$("m").textContent="";let u=Math.random(),w=0;while(w<4&&u>H[w][2]){u-=H[w][2];w++}
+  const T=H.map((h,j)=>j==w?4000:4400+rnd(1800));H.forEach((h,j)=>{const e=$("h"+j);e.style.transition="none";e.style.left="0";void e.offsetWidth;e.style.transition="left "+T[j]+"ms linear";e.style.left="85%"});
+  setTimeout(()=>{const g=Math.floor(b*.9/H[w][2]);i==w?pay("🏆 "+H[w][1]+" gagne ! +"+(g-b),g):pay(H[w][1]+" gagne… perdu −"+b,0)},4200)};
+ return `${betUI()}<small>Choisis ton cheval : plus il est improbable, plus il rapporte.</small>`+H.map((h,j)=>`<div class="row" style="margin:4px 0"><div style="position:relative;flex:1;height:34px;border-bottom:1px dashed var(--ln)"><span id="h${j}" style="position:absolute;left:0;top:0;font-size:26px">${h[0]}</span></div><button class="b" onclick="hrGo(${j})">${h[1]} x${(.9/h[2]).toFixed(1)}</button></div>`).join("")+`<div class="msg" id="m"></div>`}};
+const FT=()=>{const L=D.filter(c=>c.ab!=null&&c.r>=3);return L[WK%L.length]};
+games.qz={n:"🧠 Quiz anime",init(){const K="cqz_"+me,T=()=>new Date().toISOString().slice(0,10);let S=null,q;try{S=JSON.parse(localStorage.getItem(K))}catch(e){}S=S||{};if(S.d!=T()){S.d=T();S.n=0}
+ const sv=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}},nx=()=>{const c=D[rnd(D.length)],o=[c];while(o.length<4){const x=D[rnd(D.length)];if(!o.includes(x))o.push(x)}o.sort(()=>Math.random()-.5);q=c;const b=$("qb");if(!b)return;b.innerHTML=`<div class="big">${c.e}</div><div class="msg" style="text-align:center">${RN[c.r]} · commence par « ${c.n[0]} » · ${c.n.length} lettres</div>`+o.map(x=>`<button class="b" style="display:block;width:100%;margin:5px 0" onclick="qzA(${x.id})">${x.n}</button>`).join("")};
+ window.qzA=id=>{const ok=id==q.id;if(ok&&S.n<10){S.n++;bal+=30;save();toast("✅ +30 🪙 ("+S.n+"/10 aujourd'hui)")}else toast(ok?"✅ Bonne réponse (limite du jour atteinte)":"❌ C'était "+q.n);sv();nx()};
+ setTimeout(nx,0);return `<b>🧠 Quiz anime</b> <small>Devine le personnage : +30 🪙 par bonne réponse, 10 par jour maximum.</small><div id="qb"></div>`}};
+games.ex={n:"🧭 Expéditions",init(){const K="cexp_"+me;let S=null,P=[];try{S=JSON.parse(localStorage.getItem(K))}catch(e){}
+ const sv=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
+ window.exPick=(id,e)=>{const i=P.indexOf(id);if(i>=0){P.splice(i,1);e.classList.remove("sel")}else if(P.length<3){P.push(id);e.classList.add("sel")}$("exs").textContent=P.length+"/3"};
+ window.exGo=()=>{if(P.length!=3)return toast("Choisis 3 cartes");const h=+$("exd").value;S={t:Date.now()+h*36e5,h,r:P.reduce((s,i)=>s+(D[i].r+1)*8,0)*h};sv();show("ex")};
+ window.exGet=()=>{if(Date.now()<S.t)return;const r=S.r;let x="";bal+=r;if(S.h>=8&&Math.random()<.3){const L=D.filter(c=>c.r<=1&&c.ab==null),c=L[rnd(L.length)];cards[c.id]=(cards[c.id]||0)+1;x=" + "+c.e+" "+c.n}S=null;sv();save();toast("🧭 Retour : +"+r+" 🪙"+x);show("ex")};
+ if(S)return `<b>🧭 Expédition en cours</b><div class="msg">${S.t>Date.now()?"Retour dans "+fmt(S.t-Date.now()):"✅ Ton équipe est revenue !"} · butin : ${S.r} 🪙${S.h>=8?" (+ chance de carte)":""}</div><button class="b p" ${S.t>Date.now()?"disabled":""} onclick="exGet()">Récupérer</button>`;
+ const have=D.filter(c=>cards[c.id]).sort((a,b)=>b.r-a.r);
+ if(have.length<3)return `<b>🧭 Expéditions</b><br><small>Il te faut au moins 3 cartes.</small>`;
+ return `<b>🧭 Expéditions</b><br><small>Envoie 3 cartes en mission : plus elles sont rares et plus la mission est longue, plus le butin est gros. Les missions de 8 h et 24 h peuvent aussi rapporter une carte.</small><div class="row">Durée <select id="exd"><option value="1">1 h</option><option value="8">8 h</option><option value="24">24 h</option></select><span id="exs">0/3</span><button class="b p" onclick="exGo()">Partir</button></div><div class="cards">${have.map(c=>`<div class="cd f mini" style="--rc:${RC[c.r]}" onclick="exPick(${c.id},this)"><span>${c.e}</span><em>${c.n}</em></div>`).join("")}</div>`}};
+games.vl={n:"🏰 Ville",init(){const K="cvil_"+me,B=[["🔨 Forge",20,500],["🍺 Taverne",35,1200],["🧪 Laboratoire",60,3000]];let S=null;try{S=JSON.parse(localStorage.getItem(K))}catch(e){}S=S||{l:[0,0,0],t:Date.now()};
+ const sv=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}},rate=()=>B.reduce((s,b,i)=>s+b[1]*S.l[i],0),pend=()=>Math.floor(rate()*Math.min(12,(Date.now()-S.t)/36e5)),cost=i=>Math.round(B[i][2]*Math.pow(S.l[i]+1,1.6));
+ window.vlUp=i=>{if(S.l[i]>=20||bal<cost(i))return toast("Pas assez de jetons");bal+=pend();S.t=Date.now();bal-=cost(i);S.l[i]++;sv();save();show("vl")};
+ window.vlGet=()=>{const p=pend();if(!p)return;bal+=p;S.t=Date.now();sv();save();toast("🏰 +"+p+" 🪙");show("vl")};
+ return `<b>🏰 Ma ville</b><br><small>Tes bâtiments produisent des jetons à toute heure (stockage maximum : 12 h). Améliore-les jusqu'au niveau 20.</small><div class="msg">Production : ${rate()} 🪙/h · en attente : ${pend()} 🪙</div><button class="b p" ${pend()?"":"disabled"} onclick="vlGet()">Récolter</button>`+B.map((b,i)=>`<div class="sk"><span>${b[0]} · niv. ${S.l[i]}/20 · +${b[1]*S.l[i]} 🪙/h</span>${S.l[i]>=20?"<small>Max ✔</small>":`<button class="b" ${bal<cost(i)?"disabled":""} onclick="vlUp(${i})">${S.l[i]?"Améliorer":"Construire"} (${cost(i).toLocaleString("fr")} 🪙)</button>`}</div>`).join("")}};
+const SER=[["Naruto","Naruto Sasuke Kakashi Itachi Madara Haruno Jiraiya Gaara Orochimaru Tsunade Minato Obito Pain Neji Shikamaru Hinata Choji Kiba Shino Akamaru Konohamaru Rock Boruto Kurama Kaguya"],["One Piece","Luffy Zoro Nami Usopp Sanji Robin Chopper Brook Franky Ace Sabo Trafalgar Mihawk Doflamingo Crocodile Kaido Hancock Jinbe Kid Garp Akainu Aokiji Kizaru Linlin Newgate Joy Pirates"],["Dragon Ball","Goku Vegeta Krillin Yamcha Tenshinhan Piccolo Gohan Trunks Frieza Cell Buu Raditz Nappa Beerus Whis Zeno Oolong Puar"],["Bleach","Ichigo Rukia Renji Uryu Sado Orihime Byakuya Kenpachi Aizen Hitsugaya Grimmjow Ulquiorra Urahara Kon Yhwach"],["L'Attaque des Titans","Eren Mikasa Levi Armin Erwin Connie Sasha Kirstein Historia Reiner Hange Annie Zeke"],["My Hero Academia","Izuku Bakugo Todoroki Uraraka Iida Kirishima Tsuyu Kaminari Ashido Shigaraki Endeavor Hawks Dabi Overhaul"],["Jujutsu Kaisen","Itadori Gojo Sukuna Megumi Nobara Maki Panda Inumaki Nanami Toji Yuta"],["Demon Slayer","Tanjiro Nezuko Zenitsu Inosuke Rengoku Shinobu Giyu Muichiro Mitsuri Akaza Tengen Sanemi Obanai Muzan Genya"],["Haikyuu","Shoyo Tobio Tsukishima Yamaguchi Daichi Sugawara Asahi Nishinoya Tanaka Yachi Shimizu Kenma Kuroo Yaku Yamamoto Bokuto Akaashi Oikawa Iwaizumi Ushijima Atsumu Osamu Sakusa Kita Tendo Suna Aran Terushima Komori Hoshiumi Kyoutani Yahaba Takeda Ukai Kinoshita Narita Ennoshita Watari Hanamaki Matsukawa Kunimi Kindaichi Goshiki Shirabu Semi Futakuchi Aone Konoha Washio Sarukui Komi Sakunami Ginjima Omimi Shibayama Inuoka Fukunaga Nekomata Kawanishi"]].map(x=>[x[0],x[1].split(" ")]);
+const _sm={},ser=c=>{if(_sm[c.id]===undefined){_sm[c.id]=SER.findIndex(s=>s[1].some(k=>c.n.includes(k)))}return _sm[c.id]};
+function syn(T){const m={};T.forEach(f=>{const s=ser(f.c);if(s>=0)m[s]=(m[s]||0)+1});window.SYNT="";T.forEach(f=>{const s=ser(f.c),n=m[s];if(s>=0&&n>=2){const k=n>=3?1.25:1.1;f.hp=f.max=Math.round(f.hp*k);f.atk=Math.round(f.atk*k)}});Object.keys(m).forEach(s=>{if(m[s]>=2)window.SYNT+=" ⚡ Synergie "+SER[s][0]+" ×"+m[s]+" ("+(m[s]>=3?"+25":"+10")+"%)"});return T}
+const FR=[["Aucun","",0],["Or","#ffd700",2000],["Rubis","#e84a5f",3000],["Saphir","#3b82f6",3000],["Arc-en-ciel","#ff4fd8",10000]],frS=()=>{try{return JSON.parse(localStorage.getItem("cfr_"+me))||{o:[0],c:0}}catch(e){return{o:[0],c:0}}};
+function frApply(){const e=$("hav");if(!e)return;const f=FR[frS().c]||FR[0];e.style.borderColor=f[1]||"";e.style.boxShadow=f[1]?"0 0 12px "+f[1]:"";if(f[0]=="Arc-en-ciel")e.style.boxShadow="0 0 8px #f0f,0 0 16px #0ff,0 0 24px #ff0"}
+games.jo={n:"📖 Journal",init(){window.frAct=i=>{const s=frS();if(!s.o.includes(i)){if(bal<FR[i][2])return toast("Pas assez de jetons");bal-=FR[i][2];s.o.push(i);save()}s.c=i;try{localStorage.setItem("cfr_"+me,JSON.stringify(s))}catch(e){}frApply();show("jo")};
+ const g=SER.map((s,i)=>[s[0],D.filter(c=>ser(c)==i)]);g.push(["Autres animes & héros",D.filter(c=>ser(c)<0)]);const s=frS();
+ return `<b>📖 Journal des personnages</b><br><small>Synergies : 2 cartes de la même série dans ton équipe = +10% PV/ATQ, 3 cartes = +25% (Histoire et Combat).</small>`+g.map(x=>{const h=x[1].filter(c=>cards[c.id]);return `<details style="margin:6px 0"><summary><b>${x[0]}</b> — ${h.length}/${x[1].length}</summary>${x[1].map(c=>{const t=cst(c);return cards[c.id]?`<div class="sk" style="border-color:${RC[c.r]}"><b>${c.e} ${c.n}</b><small>${RN[c.r]} · ❤️${t.hp} ⚔️${t.atk} · ✨${AB[t.sp]} · ×${cards[c.id]}</small></div>`:`<div class="sk mu">❔ ???</div>`}).join("")}</details>`}).join("")+`<br><b>🖼️ Cadres de profil</b><div class="row">${FR.map((f,i)=>`<button class="b ${s.c==i?"p":""}" onclick="frAct(${i})">${f[0]}${s.o.includes(i)?"":" ("+f[2]+" 🪙)"}</button>`).join("")}</div>`}};
+games.mm={n:"🧩 Memory",init(){const K="cmm_"+me,T=()=>new Date().toISOString().slice(0,10);let S=null;try{S=JSON.parse(localStorage.getItem(K))}catch(e){}S=S||{};if(S.d!=T()){S.d=T();S.n=0}
+ const E=[];while(E.length<8){const c=D[rnd(D.length)];if(!E.includes(c.e))E.push(c.e)}const a=[...E,...E].sort(()=>Math.random()-.5),F=[];let o=null,lk=0,mv=0,fd=0;
+ window.mmC=i=>{if(lk||F[i]||o===i)return;const b=$("mm"+i);b.textContent=a[i];b.classList.add("o");if(o===null){o=i;return}mv++;if(a[o]==a[i]){F[o]=F[i]=1;o=null;if(++fd==8){const r=S.n<5?Math.max(20,100-mv*3):0;S.n++;bal+=r;try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}save();$("mmm").textContent="🎉 Gagné en "+mv+" coups"+(r?" ! +"+r+" 🪙":" (limite de 5 gains par jour atteinte)")}}else{lk=1;const p=o;o=null;setTimeout(()=>{[p,i].forEach(k=>{const e=$("mm"+k);e.textContent="";e.classList.remove("o")});lk=0},700)}};
+ return `<b>🧩 Memory</b> <small>Trouve les 8 paires de personnages. Jusqu'à 100 🪙 par partie, 5 gains par jour maximum.</small><div class="mg" style="grid-template-columns:repeat(4,64px)">${a.map((x,i)=>`<button id="mm${i}" onclick="mmC(${i})"></button>`).join("")}</div><div class="msg" id="mmm"></div><button class="b" onclick="show('mm')">Nouvelle partie</button>`}};
+const fAct=k=>{const B=BS;if(B.over)return;const a=B.T.find(x=>x.hp>0),e=B.E.find(x=>x.hp>0),L=t=>B.log.push(t);
+ if(k=="s"){if(B.cd)return;B.cd=3}else if(B.cd)B.cd--;go(a,e,k,L);
+ if(e.hp>0){const k2=(!B.ecd&&Math.random()<.4)?"s":"a";if(k2=="s")B.ecd=3;else if(B.ecd)B.ecd--;go(e,a,k2,L)}
+ [a,e].forEach(x=>{if(x.po>0&&x.hp>0){const d=Math.round(x.max*.07);x.hp=Math.max(0,x.hp-d);x.po--;L(x.c.n+" ☠️ −"+d)}});
+ if(!B.T.some(x=>x.hp>0)){B.over=-1;L("💀 Défaite...")}else if(!B.E.some(x=>x.hp>0)){B.over=1;L("🏆 Victoire ! +"+B.rew+" 🪙");bal+=B.rew;save()}bRender()};
+games.dj={n:"🗝️ Donjon",init(){let R=null;const K="cdj_"+me,best=()=>+(localStorage.getItem(K)||0);
+ const fl=()=>{const f=R.f,bs=f%5==0,r=Math.min(6,Math.floor(f/4)+(bs?1:0)),L=D.filter(c=>c.r==r&&c.ab==null),n=bs?1:f>3?2:1;BS={T:R.T,E:Array.from({length:n},()=>mkF(L[rnd(L.length)],(.8+f*.06)*(bs?1.25:1))),cd:0,ecd:0,log:["Étage "+f+(bs?" — BOSS !":"")+(window.SYNT||"")],rew:30+f*10,over:0};busy=true;$("dj").innerHTML=`<b>🗝️ Étage ${f}</b> <small>(record : ${best()})</small><div id="bf"></div>`;bRender()},
+ up=[["❤️ +25% PV max",f=>{f.max=Math.round(f.max*1.25);f.hp=Math.round(f.hp*1.25)}],["⚔️ +25% ATQ",f=>{f.atk=Math.round(f.atk*1.25)}],["💊 Soin 50%",f=>{if(f.hp>0)f.hp=Math.min(f.max,f.hp+Math.round(f.max*.5))}],["✨ Soin total",f=>{if(f.hp>0)f.hp=f.max}]];
+ window.bAct=fAct;window.djPick=i=>{R.T.forEach(up[i][1]);R.f++;fl()};
+ window.bEnd=()=>{const w=BS.over==1;busy=false;BS=null;if(w){const o=[0,1,2,3].sort(()=>Math.random()-.5).slice(0,3);$("dj").innerHTML=`<b>Étage ${R.f} terminé !</b> Choisis une amélioration :<div class="row">${o.map(i=>`<button class="b p" onclick="djPick(${i})">${up[i][0]}</button>`).join("")}</div>`}else{const r=(R.f-1)*40;bal+=r;if(R.f>best())try{localStorage.setItem(K,R.f)}catch(e){}save();toast("🗝️ Fin du donjon : étage "+R.f+" · +"+r+" 🪙");show("dj")}};
+ window.djGo=()=>{if(bal<100)return toast("Il faut 100 🪙");bal-=100;save();R={f:1,T:syn(stTeam().map(c=>{const f=mkF(c,1+lvl()*.05);f.hp=f.max=Math.round(f.hp*(1+itB(3)));f.atk=Math.round(f.atk*(1+itB(4)));return f}))};fl()};
+ return `<div id="dj"><b>🗝️ Donjon infini</b><br><small>Entrée : 100 🪙. Enchaîne les étages avec la même équipe (PV conservés), choisis une amélioration entre chaque combat. Un boss tous les 5 étages. Si ton équipe tombe, tu gagnes 40 🪙 par étage terminé. Record : étage ${best()}.</small><br><button class="b p" onclick="djGo()">⚔️ Entrer (100 🪙)</button></div>`}};
+games.cg={n:"🎁 Cadeaux",init(){if(!DB||me=="invite")return `<b>🎁 Cadeaux</b><br><small>Disponible uniquement dans la version en ligne, avec un compte.</small>`;
+ window.cgSend=async()=>{const u=norm($("gu").value),a=parseInt($("ga").value),k="cgs_"+me+"_"+new Date().toISOString().slice(0,10),sent=+(localStorage.getItem(k)||0);if(!u||u==me||!(a>0))return toast("Destinataire et montant requis");if(a>bal)return toast("Pas assez de jetons");if(sent+a>500)return toast("Maximum 500 🪙 offerts par jour (reste "+(500-sent)+")");
+  try{const x=await DB.collection("pl").doc(u).get();if(!x.exists)return toast("Joueur introuvable");bal-=a;save();await DB.collection("gx").add({to:u,fn:me,amt:a,st:"open",t:Date.now()});localStorage.setItem(k,sent+a);toast("🎁 "+a+" 🪙 envoyés à "+u)}catch(e){toast("Erreur réseau")}};
+ return `<b>🎁 Offrir des jetons à un ami</b><br><small>Maximum 500 🪙 par jour. Il les reçoit dès qu'il est connecté.</small><div class="row"><input id="gu" placeholder="Identifiant" style="width:150px"><input id="ga" type="number" placeholder="Montant"><button class="b p" onclick="cgSend()">Envoyer</button></div>`}};
+async function cgPoll(){if(!DB||!me||me=="invite")return;try{const q=await DB.collection("gx").where("to","==",me).get();for(const x of q.docs){if(x.data().st!="open")continue;const r=DB.collection("gx").doc(x.id),a=await r.acquire({holder:me,ttlMs:8000});if(!a.acquired)continue;const y=(await r.get()).data();if(!y||y.st!="open")continue;await r.update({st:"done"});bal+=y.amt;save();toast("🎁 "+y.fn+" t'envoie "+y.amt+" 🪙 !")}}catch(e){}}
+setInterval(cgPoll,20000);setTimeout(cgPoll,4000);
+games.lt={n:"🎟️ Loto",init(){if(!DB||me=="invite")return `<b>🎟️ Loto</b><br><small>Disponible uniquement dans la version en ligne, avec un compte.</small>`;
+ window.ltBuy=async n=>{if(bal<n*100)return toast("Pas assez de jetons");const r=DB.collection("loto").doc("w"+WK);try{const a=await r.acquire({holder:me,ttlMs:8000});if(!a.acquired)return toast("Réessaie");const x=await r.get(),d=x.exists?x.data():{t:{}};d.t=d.t||{};if((d.t[me]||0)+n>20)return toast("20 tickets maximum par semaine");d.t[me]=(d.t[me]||0)+n;await r.set(d);bal-=n*100;save();toast("🎟️ +"+n+" ticket(s)");ltShow()}catch(e){toast("Erreur réseau")}};
+ window.ltClaim=p=>{bal+=p;save();try{localStorage.setItem("clt_"+me+"_"+WK,1)}catch(e){}toast("🎉 +"+p.toLocaleString("fr")+" 🪙");ltShow()};
+ setTimeout(ltShow,0);return `<div id="lt">Chargement…</div>`}};
+async function ltShow(){const e=$("lt");if(!e)return;let d={t:{}},p=null;const C=DB.collection("loto"),cur=C.doc("w"+WK),prv=C.doc("w"+(WK-1));
+ try{const x=await cur.get();if(x.exists)d=x.data();const y=await prv.get();if(y.exists){p=y.data();if(!p.win&&Object.keys(p.t||{}).length){const a=await prv.acquire({holder:me,ttlMs:8000});if(a.acquired){const z=(await prv.get()).data();if(!z.win){const E=Object.entries(z.t),tot=E.reduce((s,k)=>s+k[1],0);let u=Math.random()*tot,w=E[0][0];for(const k of E){if(u<k[1]){w=k[0];break}u-=k[1]}z.win=w;z.pot=tot*100;await prv.set(z)}p=(await prv.get()).data()}}}}catch(err){}
+ d.t=d.t||{};const my=d.t[me]||0,tot=Object.values(d.t).reduce((s,v)=>s+v,0),won=p&&p.win==me&&!localStorage.getItem("clt_"+me+"_"+(WK-1));
+ e.innerHTML=`<b>🎟️ Loto de la semaine</b><br><small>Ticket : 100 🪙 (20 maximum chacun). Tirage au sort entre tous les tickets, le gagnant remporte la cagnotte entière. Tirage au changement de semaine (lundi).</small><div class="msg">Cagnotte : ${(tot*100).toLocaleString("fr")} 🪙 · ${tot} ticket(s) · les tiens : ${my}</div><div class="row"><button class="b p" onclick="ltBuy(1)">+1 ticket</button><button class="b" onclick="ltBuy(5)">+5 tickets</button></div>`+(p&&p.win?`<div class="msg">Dernier tirage : 🏆 ${p.win} a gagné ${(p.pot||0).toLocaleString("fr")} 🪙</div>`:"")+(won?`<button class="b p" onclick="ltClaim(${p.pot})">🎉 Récupérer ${p.pot.toLocaleString("fr")} 🪙</button>`:"")}
+games.pe={n:"🧍 Perso",init(){
+  const SL=[["hs","Coiffure"],["tp","Haut"],["cp","Cape"],["ht","Chapeau"],["fc","Visage"],["sc","Écharpe"],["pt","Compagnon"],["au","Aura"]],mine=x=>CAT.filter(i=>i.s==x&&it[i.id]);
+  const PS=["#fde4cf","#f5d0b0","#e0ac82","#b97a56","#8d5524","#5c3a21"],PH=["#2b1b17","#7a4a21","#d9b34a","#e84a5f","#3b82f6","#22c55e","#a855f7","#f5f5f5","#ff8fc7","#ff7a2c"],PE=["#3b82f6","#22c55e","#a855f7","#e84a5f","#f59e0b","#111827"],PB=["#e84a5f","#3b82f6","#22c55e","#f5c542","#a855f7","#111827","#ffffff","#ff8fc7"];
+  window.chSet=(k,v)=>{ch[k]=v;save();prof();show("pe")};
+  window.chEq=(s,id)=>{ch.eq={...ch.eq};if(id)ch.eq[s]=id;else delete ch.eq[s];save();prof();show("pe")};
+  window.lk=i=>{const p=[{p:700,k:3,w:[55,28,11,5,1],g:0},{p:2000,k:4,w:[30,38,20,9,3],g:1}][i];if(bal<p.p)return toast("Pas assez de jetons 😢");bal-=p.p;const out=[];
+    for(let j=0;j<p.k;j++){let x=Math.random()*100,r=0;for(;r<4&&x>=p.w[r];r++)x-=p.w[r];if(j==p.k-1)r=Math.max(r,p.g);const L=CAT.filter(c=>c.r==r),c=L[rnd(L.length)];
+      if(it[c.id]){const b=[20,60,200,600,2000][c.r];bal+=b;out.push([c,"doublon +"+b+" 🪙"])}else{it[c.id]=1;out.push([c,"NEW"])}}
+    save();$("lkr").innerHTML=out.map(([c,t])=>`<div class="sk" style="border-color:${RC[c.r]}"><b>${["ht","fc","pt"].includes(c.s)?c.v:"✨"} ${c.n}</b><span style="color:${RC[c.r]}">${RN[c.r]}</span><small>${t}</small></div>`).join("");setTimeout(()=>{const v=document.querySelector(".pv");if(v)v.innerHTML=avSVG(0)},0)};
+  const pal=(k,l)=>l.map(c=>`<button class="dot${ch[k]==c?" on":""}" style="background:${c}" onclick="chSet('${k}','${c}')"></button>`).join("");
+  return `<div class="pe" style="display:block"><div style="background:#0003;border-radius:16px;padding:8px;margin-bottom:10px">${avSVG(2)}</div><div><b>Mon personnage</b>
+  <div class="row">Peau ${pal("sk",PS)}</div><div class="row">Cheveux ${pal("hc",PH)}</div><div class="row">Yeux ${pal("ec",PE)}</div>
+  <div class="row">Caleçon ${pal("bc",PB)}</div><div class="row">${["Uni","Pois","Rayures","Cœurs"].map((t,i)=>`<button class="b${(ch.bp||0)==i?" p":""}" onclick="chSet('bp',${i})">${t}</button>`).join("")}</div>
+  ${SL.map(([s,t])=>`<div class="row"><b>${t}</b><button class="b${ch.eq[s]?"":" p"}" onclick="chEq('${s}','')">${s=="hs"?"Courts":"Aucun"}</button>${mine(s).map(x=>`<button class="b${ch.eq[s]==x.id?" p":""}" onclick="chEq('${s}','${x.id}')">${["ht","fc","pt"].includes(s)?x.v+" ":""}${x.n}</button>`).join("")}</div>`).join("")}</div></div>
+  <b>📦 Boosters Look</b> <small>coiffures, tenues, capes, chapeaux, animaux de compagnie, auras (style anime & cosplay)</small>
+  <div class="row"><button class="b p" onclick="lk(0)">Booster Look<br>700 🪙 · 3 objets</button><button class="b p" onclick="lk(1)">Booster Premium<br>2000 🪙 · 4 objets</button></div><div id="lkr"></div>`}};
+games.rp={n:"✊ Duel PFC",init(){setTimeout(rrp,0);
+  return DB?`${betUI()}<div class="row">Ton coup : ${["r","p","c"].map(k=>`<button class="b rpb${RP==k?" p":""}" data-k="${k}" onclick="RP='${k}';document.querySelectorAll('.rpb').forEach(b=>b.classList.toggle('p',b.dataset.k==RP));rrp()">${RPE[k]}</button>`).join("")}</div>
+  <div class="row"><button class="b p" onclick="rpNew()">Lancer un défi</button></div><small>Ta mise est bloquée jusqu'à ce qu'un ami relève le défi. Gagnant = x2, égalité = remboursé.</small><br><b>Défis ouverts</b><div id="rl"></div>`:"<small>Mode en ligne requis.</small>"}};
+games.wi={n:"🌠 Vœux",init(){
+  const ST=r=>"★".repeat(r>=3?5:r==2?4:3),CL=r=>r>=3?"#ffcf40":r==2?"#c084fc":"#7aa7ff";
+  const pk=(h,r)=>{const L=D.filter(c=>(c.ab!=null)==h&&c.r==r);return L[rnd(L.length)]};
+  const one=()=>{const p5=PY.n>=59?1:.02+(PY.n>=40?(PY.n-39)*.05:0),p4=PY.s>=9?1:.12,x=Math.random();PY.n++;PY.s++;let c;
+    if(x<p5){PY.n=0;PY.s=0;c=Math.random()<.5?FT():pk(true,Math.random()<.85?3:4)}else if(x<p5+p4){PY.s=0;c=pk(true,2)}else c=pk(false,Math.random()<.25?1:0);
+    const nw=!cards[c.id];cards[c.id]=(cards[c.id]||0)+1;return{c,nw}};
+  const pt=()=>"✨ 5★ garanti dans "+(60-PY.n)+" vœux · 4★ garanti dans "+(10-PY.s)+" vœux";
+  window.wish=n=>{const cost=n==1?160:1500;if(bal<cost)return toast("Pas assez de jetons 😢");bal-=cost;busy=true;const res=[...Array(n)].map(one),f5=res.find(x=>x.c.r>=3&&x.c.ab!=null),off=f5?2400:0;if(f5)fiveFx(f5.c);save();$("wr").innerHTML="";$("wp").textContent=pt();
+    res.forEach((x,i)=>setTimeout(()=>{const w=$("wr");if(!w)return;const c=x.c,el=document.createElement("div");el.className="cd f"+(c.r>=3?" h":"");el.style.setProperty("--rc",CL(c.r));
+      el.innerHTML=`<span>${c.e}</span><em>${c.n}</em><small>${ST(c.r)}${x.nw?" · NEW":""}${c.ab!=null?"<br>✨"+AB[c.ab]:""}</small>`;w.appendChild(el);if(c.r>=3&&c.ab!=null)toast("🌟 5★ : "+c.n+" !")},i*350+off));
+    setTimeout(()=>{busy=false},n*350+off+100)};
+  const H=D.filter(c=>c.ab!=null).sort((a,b)=>b.r-a.r);
+  return `<div class="bn"><h2>🌠 MONDE DES VŒUX</h2><small>Exauce un vœu pour invoquer des héros avec des capacités spéciales (Vampirisme, Rage, Tempête, Renaissance, Égide, Brûlure…), utilisables dans le Combat.</small>
+  <div class="msg" id="wp">${pt()}</div><div class="row" style="justify-content:center"><button class="b p" onclick="wish(1)">Vœu ×1<br>160 🪙</button><button class="b p" onclick="wish(10)">Vœu ×10<br>1500 🪙</button></div>
+  <small>🌟 Bannière de la semaine : ${FT().e} ${FT().n} (1 chance sur 2 parmi les 5★)</small><br><small>★★★★★ 2% (garanti au 60ᵉ) · ★★★★ 12% (garanti tous les 10) · le reste : ★★★</small></div>
+  <div class="cards" id="wr"></div>
+  <details style="margin-top:12px"><summary><b>Héros du monde des vœux (${H.filter(c=>cards[c.id]).length}/${H.length})</b></summary>${H.map(c=>`<div class="sk" style="border-color:${CL(c.r)}"><b>${cards[c.id]?"✅":"❔"} ${c.e} ${c.n}</b><span style="color:${CL(c.r)}">${ST(c.r)}</span><small>✨ ${AB[c.ab]}</small></div>`).join("")}</details>`}};
+let cur="bj";
+function show(k){if(busy)return;cur=k;$("g").innerHTML=games[k].init();nav()}
+const GR=[["🎲 Jeux",["bj","ro","sl","dc","cf","hl","gr","mi","cr","pl","hr","ck","qz","mm","lt"]],["⚔️ Combat",["st","bt","rp","bq","wb","ex","dj"]],["🃏 Cartes",["bo","wi","tr"]],["🧍 Perso",["pe","sh","vl","jo","cg"]],["📟 Data",["lb","ac"]]];
+function nav(){let g=GR.findIndex(x=>x[1].includes(cur));if(g<0)g=4;const rdy=Date.now()-fb>=43200000,L=GR[g][1].includes(cur)?GR[g][1]:[...GR[g][1],cur];$("nav").innerHTML="";$("sub").innerHTML="";
+ GR.forEach((x,i)=>{const b=document.createElement("button");b.textContent=x[0]+(i==2&&rdy?" 🎁":"");b.className=i==g?"on":"";b.onclick=()=>show(x[1][0]);$("nav").appendChild(b)});
+ L.forEach(k=>{const b=document.createElement("button");b.textContent=games[k].n+(k=="bo"&&rdy?" 🎁":"");b.className=k==cur?"on":"";b.onclick=()=>show(k);$("sub").appendChild(b)})}
+games.lb={n:"🏆 Classement",init(){setTimeout(rlb,0);return `<b>🏆 CLASSEMENT</b><ol id="lb"></ol>`}};
+function rlb(){const ol=$("lb");if(!ol)return;ol.innerHTML="";if(LBD===null)return void(ol.innerHTML="<li class='mu'>Chargement…</li>");if(!LBD.length)ol.innerHTML="<li class='mu'>Personne pour l'instant</li>";
+ LBD.forEach(d=>{const li=document.createElement("li");li.textContent=(d.av||"👤")+" "+(d.name||"Anonyme")+(SK[d.skin]&&d.skin!="classic"?" "+SK[d.skin].i:"")+" — "+Number(d.bal).toLocaleString("fr")+" 🪙"+(d.nc?" · 🎴"+d.nc:"")+(d.dc?" · 💬 "+d.dc:"")+(d.id==me?" (toi)":"");ol.appendChild(li)})}
+function applyTh(){document.documentElement.setAttribute("data-th",th)}
+function cyc(){th=({g:"a",a:"v",v:"g"})[th]||"g";applyTh();save()}
+function gf(q){q.docs.forEach(x=>{const d=x.data();if(d.to!==me||gd.includes(x.id))return;gd.push(x.id);bal=Math.max(0,bal+(+d.amt||0));toast((d.amt>=0?"🎁 +":"⚠️ ")+d.amt+" 🪙 (admin)");save()})}
+async function gp(){try{gf(await DB.collection("gifts").limit(500).get())}catch(e){}}
+$("name").oninput=save;
+applySkin();show("bj");save();
+// Comptes & mode en ligne
+let CID=null,subd=false;
+const norm=v=>v.trim().toLowerCase().replace(/[^a-z0-9_-]/g,""),enc=new TextEncoder(),hex=b=>[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");
+async function hp(p,salt){const k=await crypto.subtle.importKey("raw",enc.encode(p),"PBKDF2",false,["deriveBits"]);return hex(await crypto.subtle.deriveBits({name:"PBKDF2",hash:"SHA-256",salt:enc.encode(salt),iterations:100000},k,256))}
+function tmMsg(t){$("tmsg").textContent="> "+t}
+const BOOT="ROBCO INDUSTRIES (TM) TERMLINK PROTOCOL\nMINI-CASINO VAULT-TEC EDITION\n\n> INITIALISATION...\n> MEMOIRE : 64K OK\n> SERVEUR : "+"EN LIGNE\n\nVEUILLEZ VOUS IDENTIFIER\n\n";
+function tmShow(){let i=0;$("tb").textContent="";const iv=setInterval(()=>{$("tb").textContent+=BOOT[i++];if(i>=BOOT.length){clearInterval(iv);$("tf").style.display="block";$("tu").focus();if(!DB){tmMsg("RESEAU HORS LIGNE");$("tgst").style.display=""}}},16)}
+function tmGuest(){me="invite";$("name").value="Invité";dbRef=null;$("tm").style.display="none";prof();daily();show(cur)}
+async function tmLog(){const u=norm($("tu").value),p=$("tp").value;if(!DB)return tmMsg("RESEAU HORS LIGNE");if(u.length<3||!p)return tmMsg("IDENTIFIANT OU MOT DE PASSE MANQUANT");tmMsg("VERIFICATION...");
+ try{const d=(await DB.collection("auth").doc(u).get()).data();if(!d||!d.ph||await hp(p,d.salt)!==d.ph)return tmMsg("ACCES REFUSE");enter(u,d.ph,false)}catch(e){tmMsg("ERREUR RESEAU")}}
+async function tmReg(){const u=norm($("tu").value),p=$("tp").value;if(!DB)return tmMsg("RESEAU HORS LIGNE");if(u.length<3)return tmMsg("IDENTIFIANT TROP COURT (3 MIN, a-z 0-9)");if(p.length<4)return tmMsg("MOT DE PASSE TROP COURT (4 MIN)");tmMsg("CREATION...");
+ const r=DB.collection("auth").doc(u);try{const a=await r.acquire({holder:"reg",ttlMs:6000});if(!a.acquired)return tmMsg("REESSAIE DANS UN INSTANT");const x=await r.get();if(x.exists&&x.data().ph)return tmMsg("IDENTIFIANT DEJA PRIS");
+ const salt=hex(crypto.getRandomValues(new Uint8Array(8))),ph=await hp(p,salt);await r.set({salt,ph});enter(u,ph,true)}catch(e){tmMsg("ERREUR RESEAU")}}
+async function enter(u,ph,fresh){me=u;LD=false;$("name").value=u;bal=1000;own=["classic"];skin="classic";day="";cards={};qd=[];av="🦊";dc="";fb=0;ch=dch();it={};gd=[];PY={n:0,s:0};th="g";dbRef=DB.collection("pl").doc(u);let d=null;
+ try{const x=await dbRef.get();if(x.exists)d=x.data()}catch(e){me=null;dbRef=null;$("tf").style.display="block";$("tb").textContent="ROBCO TERMLINK\n";tmMsg("ERREUR RESEAU, REESSAIE");return}
+ if(!d&&fresh&&CID){try{const o=DB.collection("players").doc(CID),x=await o.get();if(x.exists&&!x.data().mig){d=x.data();o.update({mig:1}).catch(()=>{})}}catch(e){}}
+ if(d){bal=d.bal??1000;own=d.own||own;cards=d.cards||{};qd=d.qd||[];skin=d.skin||"classic";day=d.day||"";av=d.av||av;dc=d.dc||"";fb=d.fb||0;ch={...ch,...(d.ch||{})};it=d.it||{};gd=d.gd||[];PY=d.py||PY;th=d.th||"g"}
+ LD=true;try{localStorage.setItem("session",JSON.stringify({u,ph}))}catch(e){}
+ $("tm").style.display="none";$("st").textContent="🟢 En ligne";applyTh();applySkin();prof();show(cur);save();daily();if(ISOWN){$("adb").style.display="";if(!document.querySelector('[data-k="ad"]'))addTab("ad")}subs()}
+function logout(){try{localStorage.removeItem("session")}catch(e){}location.reload()}
+function subs(){if(subd)return;subd=true;
+ const T=(n,fn)=>{try{fn()}catch(e){toast("⚠️ "+n+" : "+((e&&(e.code||e.message))||"erreur"))}};
+ T("échanges",()=>DB.collection("trades").where("st","==","open").limit(30).onSnapshot(q=>{OPEN=q.docs.map(x=>({id:x.id,...x.data()}));rtr()},()=>{}));
+ T("échanges",()=>DB.collection("trades").where("u","==",me).onSnapshot(trMine,()=>{}));
+ T("duels",()=>DB.collection("duels").where("st","==","open").limit(20).onSnapshot(q=>{DU=q.docs.map(x=>({id:x.id,...x.data()}));rrp()},()=>{}));
+ T("duels",()=>DB.collection("duels").where("u","==",me).onSnapshot(rpMine,()=>{}));
+ T("classement",()=>DB.collection("pl").orderBy("bal","desc").limit(10).onSnapshot(q=>{LBD=q.docs.map(x=>({...x.data(),id:x.id}));rlb()},()=>{LBD=[];rlb()}));
+ T("cadeaux",()=>DB.collection("gifts").limit(500).onSnapshot(gf,e=>toast("⚠️ Cadeaux : "+((e&&e.code)||"erreur"))));
+ gp();setInterval(gp,15000)}
+(async()=>{try{const[db,user]=await Promise.all([claude.use("db"),claude.use("user")]);if(db){DB=db;CID=user?await user.id():null;ISOWN=!!(user&&(await user.isOwner()||await user.canEdit()))}}catch(e){}
+ applySkin();bdg();let ss=null;try{ss=JSON.parse(localStorage.getItem("session"))}catch(e){}
+ if(DB&&ss&&ss.u){try{const d=(await DB.collection("auth").doc(ss.u).get()).data();if(d&&d.ph===ss.ph)return enter(ss.u,ss.ph,false)}catch(e){}}
+ if(DB)tmShow();else tmGuest()})();
+</script></body></html>
