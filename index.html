@@ -295,23 +295,41 @@ function toast(t){const e=document.createElement("div");e.className="toast";e.te
 function daily(){const t=new Date().toISOString().slice(0,10);if(day!==t){const y=new Date(Date.now()-864e5).toISOString().slice(0,10),S=stk();S.n=S.l==y?S.n+1:1;S.l=t;try{localStorage.setItem("cstk_"+me,JSON.stringify(S))}catch(e){}const g=200+Math.min(S.n,30)*20+({7:1000,30:5000,100:20000}[S.n]||0);day=t;bal+=g;toast("🎁 Jour "+S.n+" de série 🔥 : +"+g+" 🪙");save()}}
 const games={
 bj:{n:"🃏 Blackjack",init(){
-  let d,P,D,b,on=false;
-  const val=h=>{let t=0,a=0;h.forEach(c=>{t+=c.v>10?10:c.v==1?(a++,11):c.v});while(t>21&&a--)t-=10;return t};
-  const lab=c=>["","A",2,3,4,5,6,7,8,9,10,"J","Q","K"][c.v]+c.s;
-  const hand=(h,hide)=>h.map((c,i)=>hide&&i?`<div class="c h">?</div>`:`<div class="c ${"♥♦".includes(c.s)?"r":""}">${lab(c)}</div>`).join("");
-  const draw=()=>d.pop();
-  const ui=()=>{$("p").innerHTML=hand(P);$("d").innerHTML=hand(D,on);$("pv").textContent=val(P);$("dv").textContent=on?"":val(D);$("hit").disabled=$("stand").disabled=!on;$("deal").disabled=on};
-  const end=(m,x)=>{on=false;ui();pay(m,x)};
-  window.bjDeal=()=>{b=bet();if(!b)return($("m").textContent="Mise invalide");
-    d=[];for(const s of"♠♥♦♣")for(let v=1;v<=13;v++)d.push({v,s});d.sort(()=>Math.random()-.5);
-    bal-=b;save();P=[draw(),draw()];D=[draw(),draw()];on=true;$("m").textContent="";ui();
-    if(val(P)==21){on=false;ui();const w=Math.floor(b*2.5);pay("Blackjack ! +"+(w-b),w)}};
-  window.bjHit=()=>{P.push(draw());if(val(P)>21)end("Bust ! −"+b,0);else{ui();if(val(P)==21)bjStand()}};
-  window.bjStand=()=>{on=false;while(val(D)<17)D.push(draw());ui();const p=val(P),q=val(D);
-    if(q>21||p>q)pay("Gagné ! +"+b,b*2);else if(p==q)pay("Égalité",b);else pay("Perdu −"+b,0)};
-  return `${betUI()}<div class="row"><b>Croupier</b> <span id="dv"></span></div><div class="cards" id="d"></div>
-  <div class="row"><b>Toi</b> <span id="pv"></span></div><div class="cards" id="p"></div><div class="msg" id="m"></div>
-  <div class="row"><button class="b p" id="deal" onclick="bjDeal()">Distribuer</button><button class="b" id="hit" onclick="bjHit()" disabled>Tirer</button><button class="b" id="stand" onclick="bjStand()" disabled>Rester</button></div>`}},
+  let shoe=[],P=[],D=[],b=0,on=false,rev=false;
+  const T=()=>$("bjt"),sl=ms=>new Promise(r=>setTimeout(r,ms)),
+  M={smile:"M48 64 Q60 74 72 64",neutral:"M51 67 L69 67",shock:"M53 65 Q60 77 67 65 Q60 69 53 65Z",sad:"M49 71 Q60 62 71 71"},
+  val=h=>{let t=0,a=0;h.forEach(c=>{t+=c.v>10?10:c.v==1?(a++,11):c.v});while(t>21&&a--)t-=10;return t},
+  lab=c=>["","A",2,3,4,5,6,7,8,9,10,"J","Q","K"][c.v],
+  newShoe=()=>{shoe=[];for(let k=0;k<4;k++)for(const s of"♠♥♦♣")for(let v=1;v<=13;v++)shoe.push({v,s});shoe.sort(()=>Math.random()-.5)},
+  say=(t,m)=>{const e=$("bjs");if(!e)return;e.textContent=t;e.style.opacity=1;const p=$("bjm");if(p&&m!==null)p.setAttribute("d",M[m||"smile"])},
+  arm=()=>{const a=$("bjarm");if(!a)return;a.style.transform="rotate(-55deg)";setTimeout(()=>{if(a)a.style.transform=""},260)},
+  mk=c=>{const e=document.createElement("div");e.className="bjc";e.innerHTML=`<div class="in"><div class="fb"></div><div class="ff ${"♥♦".includes(c.s)?"r":""}"><span>${lab(c)}</span><span style="font-size:24px">${c.s}</span></div></div>`;return e},
+  lay=(h,y)=>{const W=T().clientWidth,n=h.length;h.forEach((c,i)=>{c.el.style.left=(W/2-27+(i-(n-1)/2)*30)+"px";c.el.style.top=y+"px";c.el.style.zIndex=i})},
+  ui=()=>{if(!T())return;$("pv").textContent=P.length?"Toi : "+val(P):"";$("dv").textContent=D.length?"Croupier : "+(rev?val(D):val(D.slice(0,1))+" + ?"):"";$("hit").disabled=$("stand").disabled=!on;$("dbl").disabled=!(on&&P.length==2&&bal>=b);$("deal").disabled=busy},
+  give=async(h,y,up)=>{if(!T())throw 0;if(shoe.length<8)newShoe();const c=shoe.pop(),e=mk(c);c.el=e;h.push(c);e.style.transition="none";e.style.left=(T().clientWidth-64)+"px";e.style.top="14px";T().appendChild(e);void e.offsetWidth;e.style.transition="";arm();lay(h,y);await sl(380);if(up)e.classList.add("up");await sl(260);ui()},
+  reveal=async()=>{if(rev)return;rev=true;D[1].el.classList.add("up");await sl(650);ui()},
+  chip=n=>{const c=$("bjc");if(!c)return;c.style.transition="none";c.style.transform="";c.style.opacity=1;void c.offsetWidth;c.style.transition="";c.textContent="🪙 "+n},
+  fin=(m,x,mood)=>{on=false;const c=$("bjc");if(c){c.style.transform=x>=b?"translateY(-4px) scale(1.2)":"translateY(-250px)";c.style.opacity=x>=b?1:0}say(m,mood);ui();pay(m,x);ui()},
+  clr=()=>{if(!T())return;T().querySelectorAll(".bjc").forEach(e=>e.remove());P=[];D=[];rev=false};
+  window.bjDeal=async()=>{const v=bet();if(!v)return($("m").textContent="Mise invalide");if(on)return;b=v;busy=true;bal-=b;save();$("m").textContent="";clr();chip(b);ui();say("Les jeux sont faits…","smile");
+    try{if(shoe.length<30){newShoe();say("Je remélange le sabot…");await sl(900)}
+      await give(P,265,1);await give(D,135,1);await give(P,265,1);await give(D,135,0);
+      const pb=val(P)==21,db=val(D)==21;
+      if(pb||db){await reveal();const w=Math.floor(b*2.5);if(pb&&db)return fin("Double blackjack : égalité",b,"shock");if(pb)return fin("Blackjack ! +"+(w-b),w,"shock");return fin("Blackjack du croupier −"+b,0,"smile")}
+      on=true;say("Une carte, ou vous restez ?");ui()}catch(e){busy=false}};
+  window.bjHit=async()=>{if(!on)return;on=false;ui();try{await give(P,265,1);if(val(P)>21){await reveal();return fin("Bust ! −"+b,0,"smile")}if(val(P)==21)return bjStand(true);on=true;say("Et maintenant ?");ui()}catch(e){busy=false}};
+  window.bjStand=async a=>{if(!on&&a!==true)return;on=false;ui();try{say("Voyons ça…","neutral");await reveal();while(val(D)<17){say("Je tire…","neutral");await give(D,135,1);await sl(300)}
+    const p=val(P),q=val(D);if(q>21)fin("Le croupier dépasse ! +"+b,2*b,"shock");else if(p>q)fin("Gagné ! +"+b,2*b,"shock");else if(p==q)fin("Égalité",b,"neutral");else fin("Perdu −"+b,0,"smile")}catch(e){busy=false}};
+  window.bjDouble=async()=>{if(!on||P.length!=2||bal<b)return;on=false;bal-=b;b*=2;save();chip(b);ui();say("Double !","shock");try{await give(P,265,1);if(val(P)>21){await reveal();return fin("Bust ! −"+b,0,"smile")}bjStand(true)}catch(e){busy=false}};
+  setTimeout(()=>{newShoe();ui()},0);
+  return `<style>.bjc{position:absolute;width:54px;height:78px;perspective:400px;transition:left .45s ease,top .45s ease}.bjc .in{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .5s}.bjc.up .in{transform:rotateY(180deg)}.bjc .fb,.bjc .ff{position:absolute;inset:0;border-radius:6px;backface-visibility:hidden;-webkit-backface-visibility:hidden;border:1px solid #222;box-shadow:0 2px 5px #0008}.bjc .fb{background:repeating-linear-gradient(45deg,#1a3a8a 0 4px,#2f55bd 4px 8px)}.bjc .ff{background:#fff;color:#111;transform:rotateY(180deg);display:flex;flex-direction:column;align-items:center;justify-content:center;font:bold 19px/1.05 sans-serif}.bjc .ff.r{color:#d22}#bjd{animation:bjb 3s ease-in-out infinite}@keyframes bjb{50%{transform:translateY(2px)}}#bjc{position:absolute;left:50%;top:352px;transform-origin:center;margin-left:-30px;transition:transform .8s,opacity .8s;font-weight:bold;color:#ffd700;background:#0007;border:2px dashed #ffd700;border-radius:20px;padding:2px 10px;font-size:14px}</style>${betUI()}
+  <div id="bjt" style="position:relative;height:395px;max-width:520px;margin:10px auto;border:6px solid #5a3a1a;border-radius:20px 20px 160px 160px/20px 20px 80px 80px;background:radial-gradient(ellipse at 50% 25%,#238a50,#0b3a22);overflow:hidden">
+   <svg id="bjd" viewBox="0 0 120 132" width="120" style="position:absolute;left:50%;top:0;margin-left:-60px"><rect x="22" y="80" width="76" height="52" rx="14" fill="#1b1b2b"/><path d="M60 80 L45 132 L75 132Z" fill="#fff"/><path d="M52 86 L60 92 L68 86 L68 96 L60 92 L52 96Z" fill="#c0222b"/><rect x="20" y="86" width="14" height="40" rx="7" fill="#1b1b2b"/><circle cx="27" cy="126" r="8" fill="#f2c9a0"/><g id="bjarm" style="transform-origin:92px 88px;transition:transform .25s"><rect x="86" y="86" width="14" height="40" rx="7" fill="#1b1b2b"/><circle cx="93" cy="126" r="8" fill="#f2c9a0"/></g><circle cx="60" cy="48" r="28" fill="#f2c9a0"/><path d="M31 46 Q60 4 89 46 Q74 30 60 30 Q46 30 31 46Z" fill="#2a1a10"/><rect x="34" y="30" width="52" height="8" rx="4" fill="#1f9d55"/><circle cx="49" cy="50" r="3.2" fill="#222"/><circle cx="71" cy="50" r="3.2" fill="#222"/><path d="M50 59 Q60 54 70 59" stroke="#2a1a10" stroke-width="3" fill="none" stroke-linecap="round"/><path id="bjm" d="M48 64 Q60 74 72 64" stroke="#7a2a2a" stroke-width="3" fill="#0000" stroke-linecap="round"/></svg>
+   <div id="bjs" style="position:absolute;left:calc(50% + 64px);top:10px;background:#fff;color:#222;border-radius:12px;padding:5px 9px;font-size:13px;max-width:130px;box-shadow:0 2px 6px #0006">Faites vos jeux !</div>
+   <div style="position:absolute;right:10px;top:10px;width:54px;height:80px;border-radius:6px;background:linear-gradient(135deg,#444,#111);border:2px solid #777;display:flex;align-items:center;justify-content:center;font-size:11px;color:#bbb;text-align:center">SABOT<br>4 jeux</div>
+   <div id="dv" style="position:absolute;left:10px;top:150px;color:#fff;font-size:13px;text-shadow:0 1px 2px #000"></div><div id="pv" style="position:absolute;left:10px;top:285px;color:#fff;font-size:13px;text-shadow:0 1px 2px #000"></div><div id="bjc"></div></div>
+  <div class="msg" id="m" style="text-align:center"></div>
+  <div class="row" style="justify-content:center"><button class="b p" id="deal" onclick="bjDeal()">Distribuer</button><button class="b" id="hit" onclick="bjHit()" disabled>Tirer</button><button class="b" id="stand" onclick="bjStand()" disabled>Rester</button><button class="b" id="dbl" onclick="bjDouble()" disabled>Doubler</button></div><small>Blackjack paie 3:2 · le croupier tire jusqu'à 17 · tu peux doubler sur tes 2 premières cartes.</small>`}},
 ro:{n:"🎡 Roulette",init(){
   const R=[1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36],O=[0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26],A=Math.PI*2/37;let rot=0;
   setTimeout(()=>{const cv=$("wh");if(!cv)return;const x=cv.getContext("2d");x.translate(150,150);
